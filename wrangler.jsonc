@@ -1,15 +1,9 @@
 {
   // ==============================================================================
-  // RedwoodSDK Template - Cloudflare Workers Configuration
+  // ki-jana-kb-explorer - Cloudflare Workers Configuration
   // ==============================================================================
   //
-  // TEMPLATE PLACEHOLDERS (replaced by CI/CD via sed):
-  //   __APP_NAME__      → Repository name (e.g., "my-webapp")
-  //   __DOMAIN_SUFFIX__ → Domain suffix (e.g., "tob.sh")
-  //
-  // ⚠️  WARNING: DO NOT manually edit placeholder values (__APP_NAME__, etc.)
-  // ⚠️  These are automatically replaced by CI/CD during deployment
-  // ⚠️  Manual changes will be overwritten or cause validation errors
+  // Zero-Auth Configuration: Public access, no authentication
   //
   // See: https://developers.cloudflare.com/workers/wrangler/configuration/
   // ==============================================================================
@@ -19,119 +13,46 @@
   // ============================================================================
   // Top-Level Configuration (inherited by environments unless overridden)
   // ============================================================================
-  // NOTE: We intentionally don't define "routes" here to avoid inheritance issues.
-  // Each environment defines its own routes explicitly.
-  "name": "__APP_NAME__",
+  "name": "ki-jana-kb-explorer",
   "main": "src/worker.tsx",
   "compatibility_date": "2025-05-05",
   "compatibility_flags": ["nodejs_compat"],
 
-  // Durable Objects Binding (NON-INHERITABLE - must repeat in each env)
-  "durable_objects": {
-    "bindings": [
-      {
-        "name": "SESSIONS",
-        "class_name": "SessionDurableObject"
-      }
-    ]
-  },
-
-  // Migrations (INHERITABLE - only need to define once at top level)
-  // new_sqlite_classes = SQLite storage backend (recommended for all new DOs)
-  "migrations": [
-    {
-      "tag": "v1",
-      "new_sqlite_classes": ["SessionDurableObject"]
-    }
-  ],
-
   // Environment Variables (NON-INHERITABLE - must repeat in each env)
   "vars": {
-    "ENVIRONMENT": "production",
-    "CF_ACCESS_TEAM_NAME": "tobag",
-    "CF_ACCESS_AUD": "2c757f3e31a652a476d1a2a4ad6773801ec487183111e2e30422ee6638956e13"
+    "ENVIRONMENT": "production"
   },
 
   // ============================================================================
   // Environments
   // ============================================================================
-  // Note: vars and durable_objects are NON-INHERITABLE and must be 
-  // specified for each environment. This duplication is required by Wrangler.
-  // See: https://developers.cloudflare.com/workers/wrangler/environments/
-  // ============================================================================
   "env": {
-    
+
     // Preview (deployed on Pull Requests)
     "preview": {
-      "name": "__APP_NAME__-preview",
-      "routes": [{ "pattern": "__APP_NAME__-preview.__DOMAIN_SUFFIX__", "custom_domain": true }],
-      "durable_objects": {
-        "bindings": [{ "name": "SESSIONS", "class_name": "SessionDurableObject" }]
-      },
-      "d1_databases": [
-        {
-          "binding": "DB",
-          "database_name": "__APP_NAME__-preview-db",
-          "database_id": "__D1_DATABASE_ID__",
-          "id": "__D1_DATABASE_ID__"
-        }
-      ],
+      "name": "ki-jana-kb-explorer-preview",
+      "routes": [{ "pattern": "ki-jana-kb-explorer-preview.tob.sh", "custom_domain": true }],
       "vars": {
-        "ENVIRONMENT": "preview",
-        "CF_ACCESS_TEAM_NAME": "tobag",
-        "CF_ACCESS_AUD": "2c757f3e31a652a476d1a2a4ad6773801ec487183111e2e30422ee6638956e13"
+        "ENVIRONMENT": "preview"
       }
     },
 
     // Staging (deployed on push to main)
     "staging": {
-      "name": "__APP_NAME__-staging",
-      "routes": [{ "pattern": "__APP_NAME__-staging.__DOMAIN_SUFFIX__", "custom_domain": true }],
-      "durable_objects": {
-        "bindings": [{ "name": "SESSIONS", "class_name": "SessionDurableObject" }]
-      },
-      "d1_databases": [
-        {
-          "binding": "DB",
-          "database_name": "__APP_NAME__-staging-db",
-          "database_id": "__D1_DATABASE_ID__",
-          "id": "__D1_DATABASE_ID__"
-        }
-      ],
+      "name": "ki-jana-kb-explorer-staging",
+      "routes": [{ "pattern": "ki-jana-kb-explorer-staging.tob.sh", "custom_domain": true }],
       "vars": {
-        "ENVIRONMENT": "staging",
-        "CF_ACCESS_TEAM_NAME": "tobag",
-        "CF_ACCESS_AUD": "2c757f3e31a652a476d1a2a4ad6773801ec487183111e2e30422ee6638956e13"
+        "ENVIRONMENT": "staging"
       }
     },
 
     // Production (deployed on tag push v*)
     "production": {
-      "name": "__APP_NAME__",
-      "routes": [{ "pattern": "__APP_NAME__.__DOMAIN_SUFFIX__", "custom_domain": true }],
-      "durable_objects": {
-        "bindings": [{ "name": "SESSIONS", "class_name": "SessionDurableObject" }]
-      },
-      "d1_databases": [
-        {
-          "binding": "DB",
-          "database_name": "__APP_NAME__-db",
-          "database_id": "__D1_DATABASE_ID__",
-          "id": "__D1_DATABASE_ID__"
-        }
-      ],
+      "name": "ki-jana-kb-explorer",
+      "routes": [{ "pattern": "ki-jana-kb-explorer.tob.sh", "custom_domain": true }],
       "vars": {
-        "ENVIRONMENT": "production",
-        "CF_ACCESS_TEAM_NAME": "tobag",
-        "CF_ACCESS_AUD": "2c757f3e31a652a476d1a2a4ad6773801ec487183111e2e30422ee6638956e13"
+        "ENVIRONMENT": "production"
       }
     }
   }
-
-  // ============================================================================
-  // SECRETS (never in this file!)
-  // ============================================================================
-  // SESSION_COOKIE_SECRET is set via:
-  //   - CI/CD: Deterministically generated per repo/env
-  //   - Manual: wrangler secret put SESSION_COOKIE_SECRET --env <environment>
 }

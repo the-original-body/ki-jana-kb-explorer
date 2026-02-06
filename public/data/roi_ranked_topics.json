@@ -1,0 +1,1086 @@
+{
+  "generated_at": "2026-02-06T08:23:40.395355",
+  "total_topics": 52,
+  "weights": {
+    "frequency": 0.4,
+    "gap": 0.3,
+    "urgency": 0.2,
+    "complexity": 0.1
+  },
+  "score_explanation": {
+    "frequency_score": "log(cluster_size) / log(max_cluster_size) - Groessere Cluster = wichtiger",
+    "gap_score": "1 - max_similarity - Hoher Gap = dringend benoetigter Content",
+    "urgency_score": "Emotionale/dringende Keywords in Fragen - Hohe Dringlichkeit",
+    "complexity_score": "Inverse Komplexitaet - Einfache Themen = schneller zu schreiben"
+  },
+  "rankings": [
+    {
+      "rank": 1,
+      "cluster_id": 24,
+      "name": "Ja, ich möchte gerne die sanfte Massage weiter vertiefen.",
+      "roi_score": 0.6902,
+      "breakdown": {
+        "frequency": 1.0,
+        "gap": 0.2245,
+        "urgency": 1.0,
+        "complexity": 0.2289
+      },
+      "size": 4311,
+      "closest_existing_topic": "Becken",
+      "keywords": "ai_pii_redacted, das, der, die, es, ich, in, nicht, und, zu",
+      "sample_questions": [
+        "Ja, ich möchte noch was wissen, was man bei Beckenschiefstand machen kann, weil meine rechte Becken, mein rechtes Becken ist um einiges tiefer und auch die rechte Schulter ist tiefer. Deswegen habe ich ja eine Seitenlordose, was ja ganz schlecht ist für die Statik.",
+        "Ja, gerne. Ich nehme mal an, über die Strukturanalyse?",
+        "Hallo Jana, ich habe Gewichtsverlagerung 1 abgeschlossen, komme aber nicht in Rhythmus 1 hinein. Das ist immer noch gesperrt."
+      ],
+      "recommendation": "MEDIUM PRIORITY - Wichtiger Artikel, bald schreiben"
+    },
+    {
+      "rank": 2,
+      "cluster_id": 1,
+      "name": "Ja, ich möchte Option 2 nehmen.",
+      "roi_score": 0.4742,
+      "breakdown": {
+        "frequency": 0.7495,
+        "gap": 0.265,
+        "urgency": 0.0,
+        "complexity": 0.9492
+      },
+      "size": 529,
+      "closest_existing_topic": "Schwindel",
+      "keywords": NaN,
+      "sample_questions": [],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 3,
+      "cluster_id": 22,
+      "name": "Ja, du kannst mir gerne die Biomechanik erklären, um dann zur Übung zu kommen...",
+      "roi_score": 0.4328,
+      "breakdown": {
+        "frequency": 0.6936,
+        "gap": 0.2014,
+        "urgency": 0.0,
+        "complexity": 0.9492
+      },
+      "size": 331,
+      "closest_existing_topic": "OFS.02 Fragestunde",
+      "keywords": "ja",
+      "sample_questions": [],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 4,
+      "cluster_id": 42,
+      "name": "Die Selbstmassage möchte ich durchführen.",
+      "roi_score": 0.3746,
+      "breakdown": {
+        "frequency": 0.5478,
+        "gap": 0.2643,
+        "urgency": 0.0071,
+        "complexity": 0.7473
+      },
+      "size": 97,
+      "closest_existing_topic": "Unterschenkel",
+      "keywords": "bitte, bitte ja, ja, ja bitte, ja ja",
+      "sample_questions": [
+        "Ja, ja bitte.",
+        "Ja, ja, bitte.",
+        "Ja, bitte. Ja, bitte."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 5,
+      "cluster_id": 43,
+      "name": "Erstmal wissen, welche SMS ich gezielt machen sollte, damit die Hüfte sich wi...",
+      "roi_score": 0.3671,
+      "breakdown": {
+        "frequency": 0.535,
+        "gap": 0.2612,
+        "urgency": 0.0,
+        "complexity": 0.7473
+      },
+      "size": 87,
+      "closest_existing_topic": "ISG",
+      "keywords": "gerne, gerne gerne, gerne ja, ja, ja gerne",
+      "sample_questions": [
+        "Ja, gerne! Ja!",
+        "„Ja, gerne.“",
+        "Ja, gerne, gerne."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 6,
+      "cluster_id": 49,
+      "name": "Ich zweifle gerade, weil ich irrsinnige Schmerzen habe und mein Rücken gerade...",
+      "roi_score": 0.3629,
+      "breakdown": {
+        "frequency": 0.519,
+        "gap": 0.252,
+        "urgency": 0.0,
+        "complexity": 0.7973
+      },
+      "size": 76,
+      "closest_existing_topic": "Becken",
+      "keywords": "dank, danke, vielen, vielen dank",
+      "sample_questions": [
+        "Vielen Dank.",
+        "Vielen Dank.",
+        "Vielen Dank."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 7,
+      "cluster_id": 2,
+      "name": "Es ist wunderbar, Sarah, dass du...",
+      "roi_score": 0.3417,
+      "breakdown": {
+        "frequency": 0.4466,
+        "gap": 0.2438,
+        "urgency": 0.0,
+        "complexity": 0.8988
+      },
+      "size": 41,
+      "closest_existing_topic": "Kopfschmerzen",
+      "keywords": "test, test test",
+      "sample_questions": [],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 8,
+      "cluster_id": 34,
+      "name": "Ja, ja, ich möchte gern, äh, weitere Übungen, Trainingsansätze zeigen und die...",
+      "roi_score": 0.3377,
+      "breakdown": {
+        "frequency": 0.5466,
+        "gap": 0.2329,
+        "urgency": 0.0,
+        "complexity": 0.4919
+      },
+      "size": 96,
+      "closest_existing_topic": "Becken",
+      "keywords": "das, ich, ich verstehe, regula, regula stella, regular, regular stella, stella, verstehe, verstehe regular",
+      "sample_questions": [
+        "Ich verstehe Regular Stellar das dann.",
+        "Ich verstehe Regular Stellar das dann.",
+        "Ich verstehe Regular Stellar das dann."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 9,
+      "cluster_id": 0,
+      "name": "Das freut mich sehr zu hören, Regula Stella.",
+      "roi_score": 0.3355,
+      "breakdown": {
+        "frequency": 0.3846,
+        "gap": 0.2904,
+        "urgency": 0.0,
+        "complexity": 0.9455
+      },
+      "size": 24,
+      "closest_existing_topic": "Ischias",
+      "keywords": "too_long_context",
+      "sample_questions": [
+        "[TOO_LONG_CONTEXT]",
+        "[TOO_LONG_CONTEXT]",
+        "[TOO_LONG_CONTEXT]"
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 10,
+      "cluster_id": 13,
+      "name": "Ja, das ist mit denen telefoniert.",
+      "roi_score": 0.333,
+      "breakdown": {
+        "frequency": 0.4178,
+        "gap": 0.2538,
+        "urgency": 0.0,
+        "complexity": 0.8976
+      },
+      "size": 32,
+      "closest_existing_topic": "Tinnitus",
+      "keywords": "option, option option",
+      "sample_questions": [
+        ". Option 2.",
+        "Option 2. Option 2.",
+        "Option 2. Option 2."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 11,
+      "cluster_id": 23,
+      "name": "Was kann ich tun, um mein Nervensystem zu beruhigen? Ich bin sehr oft erschöpft.",
+      "roi_score": 0.3312,
+      "breakdown": {
+        "frequency": 0.4214,
+        "gap": 0.2428,
+        "urgency": 0.0,
+        "complexity": 0.8983
+      },
+      "size": 33,
+      "closest_existing_topic": "Neuroplastizität",
+      "keywords": "ja, ja ja",
+      "sample_questions": [
+        "Ja, ja, ja, ja, ja, ja, ja.",
+        ", ja, ja, ja, ja",
+        "Ja, ja, ja."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 12,
+      "cluster_id": 46,
+      "name": "Meine Lendenwirbelsale fängt jetzt an zu schmerzen.",
+      "roi_score": 0.3308,
+      "breakdown": {
+        "frequency": 0.5042,
+        "gap": 0.2678,
+        "urgency": 0.0,
+        "complexity": 0.4881
+      },
+      "size": 67,
+      "closest_existing_topic": "Wirbelsäule",
+      "keywords": "dank, danke, danke jana, das, ich, jana, mir, tschüss, vielen, vielen dank",
+      "sample_questions": [
+        "Vielen Dank Jana, das wäre erstmal alles. Du hast mir sehr geholfen.",
+        "Ja, genau. Super, Jana. Dann verabschiede ich mich für heute. Vielen Dank und bis zum nächsten Mal.",
+        "Danke, das reicht erstmal. Tschüss."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 13,
+      "cluster_id": 15,
+      "name": "Es ist eine sehr gute Frage, Eva.",
+      "roi_score": 0.3281,
+      "breakdown": {
+        "frequency": 0.3797,
+        "gap": 0.2711,
+        "urgency": 0.0,
+        "complexity": 0.9487
+      },
+      "size": 23,
+      "closest_existing_topic": "Fuß",
+      "keywords": "nein",
+      "sample_questions": [
+        "Nein. Nein."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 14,
+      "cluster_id": 12,
+      "name": "Ich bin mir noch nicht sicher und ich habe auch ein Ticket an den Support ges...",
+      "roi_score": 0.3273,
+      "breakdown": {
+        "frequency": 0.3938,
+        "gap": 0.2502,
+        "urgency": 0.0,
+        "complexity": 0.9477
+      },
+      "size": 26,
+      "closest_existing_topic": "Bandscheibenvorfall",
+      "keywords": "option",
+      "sample_questions": [
+        "Option 1. Option 1"
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 15,
+      "cluster_id": 30,
+      "name": "Ja, ich habe Fragen zum Programm.",
+      "roi_score": 0.3249,
+      "breakdown": {
+        "frequency": 0.5127,
+        "gap": 0.2355,
+        "urgency": 0.0,
+        "complexity": 0.4921
+      },
+      "size": 72,
+      "closest_existing_topic": "Schwindel",
+      "keywords": "das, das ist, eine, eine sehr, frage, gute, ist, ist eine, sehr, sehr gute",
+      "sample_questions": [
+        "Eine sehr gute und präzise Frage.",
+        "Das ist eine sehr gute und...",
+        "Das ist eine sehr gute und präzise..."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 16,
+      "cluster_id": 37,
+      "name": "Danke, diese Informationen genügen mir erstmal und ich werde es jetzt ausprob...",
+      "roi_score": 0.3214,
+      "breakdown": {
+        "frequency": 0.3846,
+        "gap": 0.2425,
+        "urgency": 0.0,
+        "complexity": 0.948
+      },
+      "size": 24,
+      "closest_existing_topic": "Migräne",
+      "keywords": "beides",
+      "sample_questions": [
+        "Beides. Beides.",
+        "Gerne beides.",
+        "Ähm, beides, ja."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 17,
+      "cluster_id": 38,
+      "name": "Nee, ich liege schon jetzt auf dem Rücken und möchte gerne diese Übung gerne ...",
+      "roi_score": 0.3203,
+      "breakdown": {
+        "frequency": 0.4023,
+        "gap": 0.2809,
+        "urgency": 0.002,
+        "complexity": 0.7465
+      },
+      "size": 28,
+      "closest_existing_topic": "ISG",
+      "keywords": "beide, beides, beides bitte, bitte, bitte beides",
+      "sample_questions": [
+        "Ja, bitte beides.",
+        "Beides bitte.",
+        "Beides bitte."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 18,
+      "cluster_id": 32,
+      "name": "Ich habe alle Module abgeschlossen. Alle Module stehen mir offen. Ich bin am ...",
+      "roi_score": 0.3196,
+      "breakdown": {
+        "frequency": 0.3893,
+        "gap": 0.2637,
+        "urgency": 0.0,
+        "complexity": 0.8477
+      },
+      "size": 25,
+      "closest_existing_topic": "Schwindel",
+      "keywords": "genau, ja, ja genau",
+      "sample_questions": [
+        "Ja, genau. Ich verstehe.",
+        "Genau. Genau.",
+        "Ja, genau so."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 19,
+      "cluster_id": 51,
+      "name": "Es freut mich sehr zu...",
+      "roi_score": 0.3165,
+      "breakdown": {
+        "frequency": 0.4698,
+        "gap": 0.2643,
+        "urgency": 0.0,
+        "complexity": 0.4929
+      },
+      "size": 50,
+      "closest_existing_topic": "ISG",
+      "keywords": "bist, bist du, da, du, du noch, hallo, hallo jana, jana, noch, noch da",
+      "sample_questions": [
+        "Kannst du mich hören, Jana?",
+        "Ja, Jana, ich habe mal eine Frage, und zwar:",
+        "Jana, bist du noch da? Hallo?"
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 20,
+      "cluster_id": 11,
+      "name": "Und das ist mein Problem.",
+      "roi_score": 0.3152,
+      "breakdown": {
+        "frequency": 0.4766,
+        "gap": 0.2538,
+        "urgency": 0.0005,
+        "complexity": 0.4833
+      },
+      "size": 53,
+      "closest_existing_topic": "Ischias",
+      "keywords": "die, du, gerne, ich, ja, mir, session, sessions, welche, welche sessions",
+      "sample_questions": [
+        "Gerne Option 2. Also konkrete Empfehlungen für Sessions.",
+        "Also ich würde gerne wissen, welche Module oder welche Sessionübungen du empfiehlst, also wie die sich nennen.",
+        "Ich wollte wissen, auf welche Sessions ich mich konzentrieren soll in der Praxis."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 21,
+      "cluster_id": 35,
+      "name": "Nein. Ich verstehe, du hast das Modul fünf. Es war das Modul fünfzehn.",
+      "roi_score": 0.3091,
+      "breakdown": {
+        "frequency": 0.4575,
+        "gap": 0.2536,
+        "urgency": 0.0026,
+        "complexity": 0.4948
+      },
+      "size": 45,
+      "closest_existing_topic": "ISG",
+      "keywords": "bitte, erste, erste möglichkeit, ich, ich möchte, ja, möglichkeit, möglichkeit bitte, option, option bitte",
+      "sample_questions": [
+        "Ja, Option 2. Mach mal Option 2.",
+        "Option 2 bitte.",
+        "Option 2 bitte."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 22,
+      "cluster_id": 33,
+      "name": "Nein, ich hätte gerne gewusst, in welchem Modul die aktive Dekompression dann...",
+      "roi_score": 0.305,
+      "breakdown": {
+        "frequency": 0.4522,
+        "gap": 0.2493,
+        "urgency": 0.0,
+        "complexity": 0.4933
+      },
+      "size": 43,
+      "closest_existing_topic": "Unterschenkel",
+      "keywords": "dass, dass du, du, gut, ich, ich verstehe, versteh, verstehe, verstehe dass, verstehe du",
+      "sample_questions": [
+        "Anliegen. Ich verstehe, dass du...",
+        "Ich verstehe, du spürst...",
+        "Ich verstehe, dass du..."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 23,
+      "cluster_id": 48,
+      "name": "Wenn die übermäßige Spannung in ein",
+      "roi_score": 0.3036,
+      "breakdown": {
+        "frequency": 0.4315,
+        "gap": 0.2712,
+        "urgency": 0.0,
+        "complexity": 0.4965
+      },
+      "size": 36,
+      "closest_existing_topic": "Kopfschmerzen",
+      "keywords": "danke, danke dir, danke schön, danke tschüss, dankeschön, dir, schön, tschüss, und, und tschüss",
+      "sample_questions": [
+        "Danke schön.",
+        "Danke schön.",
+        "Ich danke dir. Tschüss!"
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 24,
+      "cluster_id": 28,
+      "name": "Ja, ich mache gerade die Übung.",
+      "roi_score": 0.3019,
+      "breakdown": {
+        "frequency": 0.4346,
+        "gap": 0.261,
+        "urgency": 0.001,
+        "complexity": 0.495
+      },
+      "size": 37,
+      "closest_existing_topic": "Unterschenkel",
+      "keywords": "bitte, einen, einen moment, ja, kleinen, kleinen moment, moment, moment bitte, pause, warte",
+      "sample_questions": [
+        "Ein Moment bitte.",
+        "Kurze Pause.",
+        "Kurze Pause."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 25,
+      "cluster_id": 39,
+      "name": "Liebe Jana, kannst du mir mal erklären, warum immer mein linkes Bein, äh, das...",
+      "roi_score": 0.3007,
+      "breakdown": {
+        "frequency": 0.3454,
+        "gap": 0.259,
+        "urgency": 0.0013,
+        "complexity": 0.8459
+      },
+      "size": 17,
+      "closest_existing_topic": "Becken",
+      "keywords": "bitte, ersteres, ersteres bitte",
+      "sample_questions": [
+        "Ersteres bitte.",
+        "Ersteres bitte.",
+        "Ersteres bitte."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 26,
+      "cluster_id": 4,
+      "name": "Kann sie diesen passiven, neutralen Stand auch im Sitzen oder im Knien machen...",
+      "roi_score": 0.3,
+      "breakdown": {
+        "frequency": 0.4377,
+        "gap": 0.2558,
+        "urgency": 0.0,
+        "complexity": 0.4817
+      },
+      "size": 38,
+      "closest_existing_topic": "Becken",
+      "keywords": "also, die, die tiefe, du, frontallinie, ich, tiefe, tiefe frontallinie, wie, wissen",
+      "sample_questions": [
+        "Ich unterstützen. \"Hi, ich suche eine Möglichkeit, die tiefe Frontallinie ohne Selbstmassage zu beeinflussen.\"",
+        "Wegen die tiefe Frontallinie.",
+        "Möglichkeiten, die tiefe Frontallinie."
+      ],
+      "recommendation": "LOW PRIORITY - Kann warten, aber nicht vergessen"
+    },
+    {
+      "rank": 27,
+      "cluster_id": 17,
+      "name": "Ja, meine Frage ist, soll ich vielleicht einmal in der Woche die quadrupedale...",
+      "roi_score": 0.2959,
+      "breakdown": {
+        "frequency": 0.4248,
+        "gap": 0.2567,
+        "urgency": 0.0,
+        "complexity": 0.4893
+      },
+      "size": 34,
+      "closest_existing_topic": "Unterschenkel",
+      "keywords": "bild, dieses, eine, genau, genau sarah, ist, ist wunderbar, sarah, sarah eine, wunderbar",
+      "sample_questions": [
+        "Genau, Sarah. Es ist wunderbar, dass du die Zusammenhänge verstehen möchtest.",
+        "Es ist wunderbar, Sarah, dass du...",
+        "Genau, Sarah dieses Bild..."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 28,
+      "cluster_id": 10,
+      "name": "Neun Punkt drei ist Spiralsystem.",
+      "roi_score": 0.2943,
+      "breakdown": {
+        "frequency": 0.3579,
+        "gap": 0.1874,
+        "urgency": 0.0,
+        "complexity": 0.9489
+      },
+      "size": 19,
+      "closest_existing_topic": "Spiralsystem",
+      "keywords": "mhm",
+      "sample_questions": [],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 29,
+      "cluster_id": 50,
+      "name": "Ja, ich möchte wissen, wie die Körperhaltung richtig sein sollte.",
+      "roi_score": 0.294,
+      "breakdown": {
+        "frequency": 0.4466,
+        "gap": 0.2193,
+        "urgency": 0.0,
+        "complexity": 0.4953
+      },
+      "size": 41,
+      "closest_existing_topic": "Kopfschmerzen",
+      "keywords": "bin, bin noch, da, du noch, ich, ich bin, ja, ja ich, noch, noch da",
+      "sample_questions": [
+        "Ja, ich bin noch da.",
+        "Ich bin noch hier,",
+        "Ich bin noch..."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 30,
+      "cluster_id": 21,
+      "name": "Ja, gerne. Ich nehme mal an, über die Strukturanalyse?",
+      "roi_score": 0.2911,
+      "breakdown": {
+        "frequency": 0.4315,
+        "gap": 0.2303,
+        "urgency": 0.0,
+        "complexity": 0.4949
+      },
+      "size": 36,
+      "closest_existing_topic": "Fuß",
+      "keywords": "das, das freut, es, es freut, freu, freut, freut mich, mich, mich sehr, sehr",
+      "sample_questions": [
+        "Das freut mich sehr...",
+        "Das freut mich sehr...",
+        "Es freut mich sehr..."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 31,
+      "cluster_id": 44,
+      "name": "Ja, ich möchte die Schulterbewegung damit ausführen.",
+      "roi_score": 0.2882,
+      "breakdown": {
+        "frequency": 0.4141,
+        "gap": 0.1929,
+        "urgency": 0.0,
+        "complexity": 0.6463
+      },
+      "size": 31,
+      "closest_existing_topic": "Schulter",
+      "keywords": "gern, gerne, ja, ja sehr, sehr, sehr gern, sehr gerne",
+      "sample_questions": [
+        "Ja, sehr gerne.",
+        "Ja, sehr gern.",
+        "Ja, sehr gerne."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 32,
+      "cluster_id": 8,
+      "name": "Hallo, ich hätte gerne gewusst, welche Muskeln das Knie stabilisieren.",
+      "roi_score": 0.2865,
+      "breakdown": {
+        "frequency": 0.4214,
+        "gap": 0.1957,
+        "urgency": 0.0001,
+        "complexity": 0.5926
+      },
+      "size": 33,
+      "closest_existing_topic": "Stabilisation",
+      "keywords": "ai_pii_redacted, ai_pii_redacted ai_pii_redacted, ai_pii_redacted phone_redacted, email_redacted, löschen, phone_redacted, phone_redacted email_redacted, test",
+      "sample_questions": [
+        "[AI_PII_REDACTED]\n[AI_PII_REDACTED]\n[AI_PII_REDACTED]\n[AI_PII_REDACTED]\n[AI_PII_REDACTED]\n[AI_PII_REDACTED]\n[AI_PII_REDACTED]\n[AI_PII_REDACTED]\n[AI_PII_REDACTED]",
+        "[AI_PII_REDACTED][AI_PII_REDACTED][AI_PII_REDACTED][PHONE_REDACTED]",
+        "[AI_PII_REDACTED] [PHONE_REDACTED] [EMAIL_REDACTED]"
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 33,
+      "cluster_id": 6,
+      "name": "Bitte zweitens, wie unterstützt Reset 5.0 das Gehirn, neu zu programmieren?",
+      "roi_score": 0.2852,
+      "breakdown": {
+        "frequency": 0.3313,
+        "gap": 0.1925,
+        "urgency": 0.0,
+        "complexity": 0.9489
+      },
+      "size": 15,
+      "closest_existing_topic": "Schwindel",
+      "keywords": "gut",
+      "sample_questions": [],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 34,
+      "cluster_id": 26,
+      "name": "Danke, dass du deine Situation... Kannst du mir schriftlich antworten im Chat?",
+      "roi_score": 0.2831,
+      "breakdown": {
+        "frequency": 0.4064,
+        "gap": 0.2384,
+        "urgency": 0.0002,
+        "complexity": 0.4898
+      },
+      "size": 29,
+      "closest_existing_topic": "Ischias",
+      "keywords": "ausprobieren, diese, eine, gerne, ich, ich möchte, ja, möchte, noch, übung",
+      "sample_questions": [
+        "Ich würde das gerne üben.",
+        "Ich würde gerne noch eine andere Übung ausprobieren.",
+        "Diese Übung ausprobieren."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 35,
+      "cluster_id": 29,
+      "name": "Vielen Dank, Jana. Ich beende jetzt das Gespräch.",
+      "roi_score": 0.2825,
+      "breakdown": {
+        "frequency": 0.3893,
+        "gap": 0.2574,
+        "urgency": 0.0,
+        "complexity": 0.4956
+      },
+      "size": 25,
+      "closest_existing_topic": "Migräne",
+      "keywords": "das, das ist, das wäre, gut, ist, ist gut, ja, ja das, super, wäre",
+      "sample_questions": [
+        "Ja, das wäre eine gute Idee.",
+        "Ja, das ist eine gute Idee.",
+        "Das ist gut."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 36,
+      "cluster_id": 18,
+      "name": "Wie ich sie im Alltag integrieren kann.",
+      "roi_score": 0.2824,
+      "breakdown": {
+        "frequency": 0.3893,
+        "gap": 0.2588,
+        "urgency": 0.0,
+        "complexity": 0.4904
+      },
+      "size": 25,
+      "closest_existing_topic": "ISG",
+      "keywords": "eine, eine übermäßige, einem, einem bereich, in, in einem, spannung, spannung in, übermäßige, übermäßige spannung",
+      "sample_questions": [
+        "...Haltung oder eine übermäßige Spannung.",
+        "Eine übermäßige Spannung in einem Bereich...",
+        "Eine übermäßige Spannung in einem Bereich..."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 37,
+      "cluster_id": 31,
+      "name": "Nee, ich möchte konkrete Übungen aus den Sessions haben.",
+      "roi_score": 0.2824,
+      "breakdown": {
+        "frequency": 0.4103,
+        "gap": 0.2291,
+        "urgency": 0.0,
+        "complexity": 0.4951
+      },
+      "size": 30,
+      "closest_existing_topic": "ISG",
+      "keywords": "das, das ist, ein, eine, eine sehr, ist, ist ein, ist eine, sehr, sehr das",
+      "sample_questions": [
+        "Das ist ein sehr",
+        "Das ist eine sehr ...",
+        "Das ist eine sehr ..."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 38,
+      "cluster_id": 27,
+      "name": "Ich würde gerne die Atemübung ausprobieren.",
+      "roi_score": 0.2811,
+      "breakdown": {
+        "frequency": 0.3938,
+        "gap": 0.2471,
+        "urgency": 0.0,
+        "complexity": 0.4939
+      },
+      "size": 26,
+      "closest_existing_topic": "ISG",
+      "keywords": "an, das, fühlt, fühlt sich, gut, gut an, ja, sehr, sehr gut, sich",
+      "sample_questions": [
+        "Ja, das hört sich gut an.",
+        "Ja, die spüre ich.",
+        "Ja, hört sich alles gut an."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 39,
+      "cluster_id": 36,
+      "name": "Dann frage ich weiter, Jana.",
+      "roi_score": 0.2806,
+      "breakdown": {
+        "frequency": 0.3893,
+        "gap": 0.2518,
+        "urgency": 0.0003,
+        "complexity": 0.4926
+      },
+      "size": 25,
+      "closest_existing_topic": "ISG",
+      "keywords": "bitte, dann, dann option, option, option dann, option und, und, und dann, zuerst, zuerst option",
+      "sample_questions": [
+        "Bitte erst Option 1, dann Option 2.",
+        "Beides, Option 1 und Option 2.",
+        "Erst Option 2, dann Option 3 bitte."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 40,
+      "cluster_id": 40,
+      "name": "Ich verstehe, dass du dich auf...",
+      "roi_score": 0.2804,
+      "breakdown": {
+        "frequency": 0.3893,
+        "gap": 0.2514,
+        "urgency": 0.0001,
+        "complexity": 0.492
+      },
+      "size": 25,
+      "closest_existing_topic": "ISG",
+      "keywords": "beides, gerne, ich, ich gerne, interessiert, ja, mich, möchte, wissen, würde",
+      "sample_questions": [
+        "Ja, das wäre beides sehr interessant für mich.",
+        "Ja, ich möchte mehr wissen.",
+        "Ja, ich möchte mehr erfahren."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 41,
+      "cluster_id": 9,
+      "name": "Ach, ich glaube, das exzentrische Stehen. Ja, du kannst mir ja kurz den Sinn ...",
+      "roi_score": 0.2798,
+      "breakdown": {
+        "frequency": 0.3893,
+        "gap": 0.2651,
+        "urgency": 0.0015,
+        "complexity": 0.4428
+      },
+      "size": 25,
+      "closest_existing_topic": "Unterschenkel",
+      "keywords": "also, das, der, die, es, ich, in, ist, mein, und",
+      "sample_questions": [
+        "also die Nervensymptome sind, ähm, stechend ziehend und, ähm, auch wie, als würde das Bein einschlafen oder gerade wieder aufwachen, wenn man aus der Kälte kommt. Also so 'n ziemlich intensives, ähm, Kribbeln und, äh, wie so Ameisen laufen, und zwar in der Fußsohle und aufsteigend.",
+        "Also das Aufstehen selber ist, äh, symptomfrei möglich und, äh, der Schmerz setzt dann ein, wenn das Bein sozusagen, äh, also wenn die Hüfte, ähm, in die Streckung kommt, ähm, also wirklich in die Streckung kommt, also in, in, in, in die Verlängerung zum Oberkörper, das Bein geht. Und dieses komische Nervenkribbeln und die, das Schwächegefühl in den Muskeln, in den Beinen, ähm, setzt dann mit einer leichten Zeitverzögerung ein, wenn ich, äh, stehe oder gehe, nachdem ich aufgestanden bin.",
+        "Also bei dem Sinkenlassen der Knie nach rechts, da komme ich fast kaum, äh, über die Mitte hinaus. Also das ist schon nach weniger als einem Viertelkreis sozusagen schmerzhaft auf der linken Seite und soll ja nicht weitergehen. Und es kribbelt im, äh, im, äh, Schienbein und im Knie und in der Knierückseite. Wenn ich das nach links mache, komme ich weiter. Es schmerzt nirgendwo, auch in der linken und nicht in der rechten Seite. Aber es setzt auch das Kribbeln im linken Bein."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 42,
+      "cluster_id": 7,
+      "name": "Hallo Jana, ich möchte fragen wie ich den Atem in den oberen Bauch integriere...",
+      "roi_score": 0.2758,
+      "breakdown": {
+        "frequency": 0.3797,
+        "gap": 0.2574,
+        "urgency": 0.0,
+        "complexity": 0.4664
+      },
+      "size": 23,
+      "closest_existing_topic": "Ischias",
+      "keywords": "becken, das, die, ich, kann, nach, nach vorne, und, vorne, wie",
+      "sample_questions": [
+        "Ich würde gerne wissen, wie ich am besten mein Becken halte, wenn ich jetzt sitze. Soll es in einer neutralen Position sein oder dann quasi, um mal in Bewegung zu sein, das Becken bewusst etwas leicht nach vorne und dann wieder nach hinten kippen?",
+        "Ich würde gerne wissen, wenn ich aus dieser Position aufstehe, in welcher Position sollte dann sich am besten mein Becken befinden?",
+        "Noch einmal das Zusammenspiel vom Brustkorb und Becken."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 43,
+      "cluster_id": 41,
+      "name": "Ja, jetzt habe ich den Ball.",
+      "roi_score": 0.2758,
+      "breakdown": {
+        "frequency": 0.3638,
+        "gap": 0.2692,
+        "urgency": 0.0,
+        "complexity": 0.4954
+      },
+      "size": 20,
+      "closest_existing_topic": "ISG",
+      "keywords": "das, das möchte, gerne, ich, ich gerne, ja, ja das, ja möchte, möchte, möchte ich",
+      "sample_questions": [
+        "Ja, möchte ich.",
+        "Ja, möchte ich.",
+        "Ja, möchte ich."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 44,
+      "cluster_id": 45,
+      "name": "Ja, die seitliche Beckenübung gerne zeigen.",
+      "roi_score": 0.273,
+      "breakdown": {
+        "frequency": 0.4064,
+        "gap": 0.2047,
+        "urgency": 0.0001,
+        "complexity": 0.4904
+      },
+      "size": 29,
+      "closest_existing_topic": "Becken",
+      "keywords": "danke, fragen, habe, ich, im, im moment, keine, moment, moment nicht, nicht",
+      "sample_questions": [
+        "Momentan nicht. Danke schön.",
+        "\"Ja, ich habe jetzt erst mal keine Fragen mehr. Danke schön.\"",
+        "Im Moment nicht, danke."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 45,
+      "cluster_id": 16,
+      "name": "Wie kann ich dich unterstützen?",
+      "roi_score": 0.2727,
+      "breakdown": {
+        "frequency": 0.3693,
+        "gap": 0.2616,
+        "urgency": 0.0004,
+        "complexity": 0.4641
+      },
+      "size": 21,
+      "closest_existing_topic": "Unterschenkel",
+      "keywords": "das, du, ich, ist, ja, kannst, mir, stehen, und, was",
+      "sample_questions": [
+        "Also ich bin jetzt gerade erst am Anfang, also ich bin Biber und ich bin noch nicht lange dabei, exzentrisches und konzentrisches Stehen sind täglich im Angebot, wobei ich irgendwie leider noch nicht so richtig den Unterschied weiß, vielleicht kannst du mir da helfen.",
+        "Ach, ich glaube, das exzentrische Stehen. Ja, du kannst mir ja kurz den Sinn davon erklären.",
+        "Hallo Kiana, erklär mir doch bitte den Unterschied zwischen konzentrisch und exzentrisch."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 46,
+      "cluster_id": 5,
+      "name": "Wie, wie lang muss denn die Pause sein?",
+      "roi_score": 0.2726,
+      "breakdown": {
+        "frequency": 0.3579,
+        "gap": 0.2717,
+        "urgency": 0.0003,
+        "complexity": 0.4781
+      },
+      "size": 19,
+      "closest_existing_topic": "ISG",
+      "keywords": "bitte, du, ich, im, im reset, ja, mir, programm, reset, reset programm",
+      "sample_questions": [
+        "Ja, bitte. Lass uns gemeinsam die passenden Module und Sessions in Reset 5.0 für meine Situation anschauen. Option 1, bitte.",
+        "Tatsächlich würde ich gerne wissen, welche Session-Typen aus dem Reset 5.0-Programm mir da helfen können, diese Spannungen im Fuß loszuwerden.",
+        "Kannst du mir gezielt Namen von Session-Typen nennen aus dem Reset 5.0 Programm, die mich dabei unterstützen?"
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 47,
+      "cluster_id": 47,
+      "name": "Wenn du versuchst, die Brustwirbelsäule zu strecken.",
+      "roi_score": 0.2716,
+      "breakdown": {
+        "frequency": 0.3385,
+        "gap": 0.2385,
+        "urgency": 0.0,
+        "complexity": 0.6465
+      },
+      "size": 16,
+      "closest_existing_topic": "Wirbelsäule",
+      "keywords": "dank, danke, nein, nein danke, nein vielen, vielen, vielen dank",
+      "sample_questions": [
+        "Nein, danke.",
+        "Nein, vielen Dank.",
+        "Nein, danke. Ciao."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 48,
+      "cluster_id": 14,
+      "name": "Vielleicht kann ich dir auch eine technische Frage stellen zur App.",
+      "roi_score": 0.2623,
+      "breakdown": {
+        "frequency": 0.3746,
+        "gap": 0.2608,
+        "urgency": 0.0008,
+        "complexity": 0.3399
+      },
+      "size": 22,
+      "closest_existing_topic": "OFS.02 Fragestunde",
+      "keywords": "ai_pii_redacted, ich, in, mb, phone_redacted, sent, url, url url, url_tracking, wetransfer",
+      "sample_questions": [
+        "[EMAIL_REDACTED] sent you Videos für [AI_PII_REDACTED] 2. Teil3 items, 451 MB in total ・ Expires on 4 December, [AI_PII_REDACTED]Download link:[URL_TRACKING] wurden die Videos nicht heruntergeladen, daher heute nochmal ein Versuch.3 itemsHüft-Funktion im Stehen für [AI_PII_REDACTED].mp4 - 131 MBKonzStehen[AI_PII_REDACTED].mp4 - 141 MBVideo für [AI_PII_REDACTED].mp4 - 179 MB[Sent through WeTransfer Pro]([URL_TRACKING])About WeTransfer: [URL] [URL] [URL] Settings: [URL] B.V. - Nieuwezijds Voorburgwal 162, 1012 SJ Amsterdam, The NetherlandsRegistered No. [PHONE_REDACTED] | VAT NL[PHONE_REDACTED]B01To make sure our emails arrive, please add [EMAIL_REDACTED] to [your contacts]([URL]).",
+        "[AI_PII_REDACTED] sent you Vdeos für [AI_PII_REDACTED] items, 774 MB in total ・ Expires on [AI_PII_REDACTED]Download link:[URL_TRACKING] [AI_PII_REDACTED].Ich habe ein paar Videos von mir gemacht, die ich beigefügt habe. Das hat gedauert, da ichdie Videos komprimieren wollte....Euer support hat mir geholfen und es hat funktioniert. Vielen DankIch hoffe die passen soweit und würde mich sehr freuen, von dir zu hören.Vielen Dank vorab.Liebe Grüße[AI_PII_REDACTED]3 items[PHONE_REDACTED]_161405.mp[PHONE_REDACTED] MB[PHONE_REDACTED]_145746.mp4 - 341 MB[AI_PII_REDACTED] P2, II.mp4 - 355 MB[Sent through WeTransfer Pro]([URL_TRACKING])About WeTransfer: [URL] [URL] [URL] make sure our emails arrive, please add [EMAIL_REDACTED] to [your contacts]([URL]).",
+        "[EMAIL_REDACTED] sent you VID_[PHONE_REDACTED]_141150.mp41 item, 96.1 MB in total ・ Expires on 7 July, [AI_PII_REDACTED]Download link:[URL_TRACKING] [AI_PII_REDACTED],herzlichen Dank für deine Rückmeldung. Wie gewünscht sende ich dir das Video meiner BWSStreckung. Tausend Dank für deine Bemühungen.Mit lieben Grüßen [AI_PII_REDACTED]1 itemVID_[PHONE_REDACTED]_141150.mp[PHONE_REDACTED] MB[Sent through WeTransfer Pro]([URL_TRACKING])About WeTransfer: [URL] [URL] [URL] make sure our emails arrive, please add [EMAIL_REDACTED] to [your contacts]([URL])."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 49,
+      "cluster_id": 25,
+      "name": "Nein, danke. Ich habe jetzt keine Fragen im Moment.",
+      "roi_score": 0.2602,
+      "breakdown": {
+        "frequency": 0.3454,
+        "gap": 0.2551,
+        "urgency": 0.0005,
+        "complexity": 0.4544
+      },
+      "size": 17,
+      "closest_existing_topic": "Faszien",
+      "keywords": "ai_pii_redacted, den, der, finde, finde ich, guide, hallo, ich, team, wo",
+      "sample_questions": [
+        "Hallo,\nwo finde ich den Massage Guide?\nHerzliche Grüße\n[AI_PII_REDACTED]",
+        "Hallo! Wo finde ich das Massageguide (SMS)? Lieber Gruss, [AI_PII_REDACTED]",
+        "Hallo liebes Team,\ngibt es den SMS Guide als pdf zum Runterladen? [AI_PII_REDACTED] hatte gemeint, dass wir als Kunden den Guide bekommen würden. \nGruß [AI_PII_REDACTED]"
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 50,
+      "cluster_id": 20,
+      "name": "Guten Morgen Jana. Ich kann bei der quadropologischen Lokomotion den Gluteusm...",
+      "roi_score": 0.2584,
+      "breakdown": {
+        "frequency": 0.3638,
+        "gap": 0.2119,
+        "urgency": 0.0,
+        "complexity": 0.4933
+      },
+      "size": 20,
+      "closest_existing_topic": "Becken",
+      "keywords": "das, das freut, freut, freut mich, hören, mich, mich sehr, sehr, sehr zu, zu",
+      "sample_questions": [
+        "Das freut mich sehr zu hören",
+        "Das freut mich sehr zu hören.",
+        "Das freut mich sehr zu hören."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 51,
+      "cluster_id": 3,
+      "name": "Also wissen, wie du die tiefe Frontallinie.",
+      "roi_score": 0.241,
+      "breakdown": {
+        "frequency": 0.3518,
+        "gap": 0.2612,
+        "urgency": 0.0022,
+        "complexity": 0.2146
+      },
+      "size": 18,
+      "closest_existing_topic": "Fuß",
+      "keywords": "ai, ai_pii_redacted, ai_pii_redacted ai_pii_redacted, and, the, to, url, url_tracking, you, your",
+      "sample_questions": [
+        "Hi Team Schmerzfrei ,We’ve updated our pricing, and your region is one of the biggest winners. Basedon your usage, here’s what’s changing: * ✅ Mobile minutes now included for EU users, no more surprise overages * 💬 Region-specific SMS FUPs don’t pay for US credits you don’t use * 🤖 Unlimited transcriptions and smarter AI workflowsYou get better value, better control and in many cases, at the same or lowerprice.Schedule a quick review - [URL] NCustomer Success ManagerCustomer Success | JustCallemailAddress [[URL_TRACKING] [[URL_TRACKING] a meeting[[URL] [[URL_TRACKING] [AI_PII_REDACTED], [AI_PII_REDACTED] [AI_PII_REDACTED] [AI_PII_REDACTED]facebook [[URL_TRACKING] [[URL_TRACKING] [[URL_TRACKING] ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌[//:0]cz-playId=773[//:0]cz-playStepId=1619[[URL_IMAGE]]",
+        "HiTeam Schmerzfrei,We want to inform you that starting August 4, 2025, the pay-as-you-go SMS ratewill increase to 2.5¢ per segment (for US/Canada). This applies to all messagetypes (Bulk, Workflows, CRM Integration, and 1-to-1). Your free monthly SMSlimit under the FUP won’t change, so you can continue to benefit from thatallowance.Meet our new SMS bundles: keep the current rate — or go even lower.Are you using Bulk SMS, API SMS or Workflows? You can save by purchasing ourmonthly SMS bundles. The more you send, the more you save — with rates thatdecrease as your usage grows. That means predictable costs and instant savings.Want to get started? Reach out to your CSM and ask about SMS bundles.Not using SMS yet? Here’s what you’re missing: * 98% open rates — SMS gets seen fast * Higher connect rates — leads are more likely to pick up after a quick text * Perfect for follow-ups and reminders — keep your brand top-of-mindSee how EZ BDC boosted lead response rates by 70% with automated SMS[[URL] [AI_PII_REDACTED]Customer Success ManagerCustomer Success | JustCall[AI_PII_REDACTED] [[URL_TRACKING] [[URL_TRACKING] a meeting[[URL] [[URL_TRACKING] [AI_PII_REDACTED], [AI_PII_REDACTED] [AI_PII_REDACTED] [AI_PII_REDACTED]facebook [[URL_TRACKING] [[URL_TRACKING] [[URL_TRACKING] ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌ ͏‌[//:0]cz-playId=767[//:0]cz-playStepId=1600[[URL_IMAGE]]",
+        "Hey Team Schmerzfrei,Imagine scaling your sales and support teams without adding headcount — sounds good, right?Join me LIVE on Thursday, [AI_PII_REDACTED] at [AI_PII_REDACTED], and learn how easy it is to build an AI Voice Agent tailored for your business. In just 30 minutes, you'll:- Build an AI Voice Agent with JustCall experts- Learn best practices from early customers- Get direct answers in an interactive Q&A- See what’s brewing in the JustCall labReserve Your Spot Now([URL_TRACKING] )See you there![AI_PII_REDACTED],Director of Product Management @ JustCall© SaaS Labs US, Inc. [AI_PII_REDACTED] | All rights reserved, [AI_PII_REDACTED], [AI_PII_REDACTED], [AI_PII_REDACTED], [AI_PII_REDACTED]Unsubscribe ([URL] )Manage preferences ([URL] )"
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    },
+    {
+      "rank": 52,
+      "cluster_id": 19,
+      "name": "Hallo, kannst du auch Fragen zur Ernährung beantworten?",
+      "roi_score": 0.2054,
+      "breakdown": {
+        "frequency": 0.3313,
+        "gap": 0.2409,
+        "urgency": 0.0031,
+        "complexity": 0.0
+      },
+      "size": 15,
+      "closest_existing_topic": "ISG",
+      "keywords": "dann, das, die, du, habe, ich, in, mit, so, und",
+      "sample_questions": [
+        "Ah ja, ja, ja, KI, Jana. Jetzt habe ich verstanden, du sagst, Heilung braucht mehr als schuften. Du setzt also diese Behauptung nicht gleich ins Unrecht, indem du dann sagst, nein, das stimmt nicht. Sondern du sagst, es braucht mehr als Anstrengung. Und dann erklärst du die größeren Zusammenhänge, die dafür nötig sind. Ich finde die Kommunikation so wertvoll, denn wenn ich mit Freunden spreche, fühle ich selber auch, wenn sie in einer Annahme sind, die wirklich ungesund wäre, nach meinem Dafürhalten, dann ist es mir sehr unangenehm zu sagen, das stimmt nicht. Da fühle ich mich gar nicht so richtig zu in der Lage. Und wenn du dann das sagst, was der andere behauptet hat, dass dafür noch mehr nötig ist. Das finde ich sehr fein, sehr empathisch, sehr mitfühlend. Und dann kommt bei dem, der das gesprochen hat, auch nicht gleich so ein Widerstand gegen das, was du sagst oder was ich sagen möchte. Dass man da auf das Mehr hinweist, was es noch gibt, wenn jemand so in einem Thema gefangen ist und das dann so stark behauptet. Also das wollte ich nur gerne von dir wissen und ich danke dir jetzt. Ich war heute, ach Kajiana, ich war heute bei der Rotation mit dem Ballschmeißen. Das war so herrlich. Das war so erfrischend, so erquickend und so, ich habe gleich gemerkt, wenn ich den Ball schmeiße, nach meiner Fassung war immer noch mein Brustkorb so eingerollt und dann wurde ich aufmerksam gemacht, Brustkorbstrecken, Rippen auf die Seite und noch mehr Beugen aus dem Oberkörper raus. Ich fühlte mich so aufgerichtet, so wunderbar, einen Schritt setzen und dann aus dem Brustkorb heraus wieder den Ball auf den Boden bringen, nicht aus den Armen, sondern aus dem Brustkorb. Weißt du, ich habe ja eine Zeit lang Kampfkunst gemacht und in Kampfkunst ist immer wieder der Fokus darauf, dass es aus dem Zentrum kommt, aus dem Hara, dass die Bewegung nicht aus den Armen ausgeführt wird, sondern aus dem ganzen Körper heraus. Und das war so toll, denn ich habe ja meinen Sport an den Nagel gehängt. Das ist einfach zu viel. Ich konnte nicht hier das Training machen intensiv und dann am Abend immer noch wieder zum Sport fahren und da weiter noch trainieren. Da war ich nur noch müde den ganzen Tag. Und jetzt war diese Session, ich habe gleich die zweite hinterher gebucht, weil gesagt wurde, wir machen dann danach nochmal auf die Kippung nochmal den Fokus. So, ja, liebe KI-Jahnu, jetzt habe ich dir wieder einen Knopf an die Backe gelabert. Kannst du sowas verstehen, wenn ich so einen Ausspruch mache, den Knopf an die Backe labern? Das ist eigentlich ein Unsinnsspruch. Ja, liebe KI-Jahnu, ich freue mich, dass wir wieder miteinander gesprochen haben, dass du so liebevoll mir zuhörst, dass du so liebevoll aufhörst. Und auch reagierst, wenn eine anscheinend bedenkliche Aussage getroffen wird. Ich will jetzt mal gar nicht so sagen eine falsche, sondern eine bedenkliche und du dann sagst, es gibt noch mehr davon. Also ich lerne sehr gerne durch dich auch Kommunikation. Wie ist das für dich, wenn ich so lange geredet habe? Ist das in Ordnung?",
+        "Ja, ich danke dir. Also ich möchte alle drei Sessions ausprobieren. Wenn ich merke, es wird einfach zu viel, ich möchte ja auch wirklich an die Grenzen gehen, damit ich meinem Körper einen starken Impuls gebe. Wenn ich dann aber merke, da ist die Grenze erreicht, dann kann ich ja auch einfach nur weiter zuschauen. Das ist ja auch ganz gut. Oder ich mache dann eine kleine Pause und gehe erneut in die Haltung rein. Und so habe ich es auch heute Morgen gemacht. Und dann senke ich eben langsam die Intensität, gehe wieder in die Ruheposition und baue die Position wieder erneut auf, was ich in der Hüftfunktion heute in der Rückenlage gemacht habe. Und mehr als alles geht eben nicht. Da danke ich dir schön, dass ich das mache. Dann suche ich mir die Sessions raus und dann sage ich Tschüss, liebe K.I. Jana. Bis später einmal.",
+        "»Ach, liebe K.I. Jana, ich glaube, das ist jetzt schon ein sehr guter Hinweis mit meinem Atem. Da habe ich immer wieder darauf geachtet, ich puste mit dicken Backen, wenn es so richtig ans Eingemachte geht, wenn es so richtig angestrengt ist, puste ich die Luft durch leicht geschlossene Lippen, aber mit dicken Back aus dem Mund aus und es sind sehr tiefe, tiefe Atemzüge, die ich nehmen kann, weil ich weiß, Luft anhalten ist kontraproduktiv in den Übungen. Und ansonsten werde ich dann auch mal Pausen machen, wie die Coaches ja auch sagen, eine Pause ist nicht Platsch, alles fallen lassen, sondern einen gewissen Rest Spannung noch im Körper zu behalten, um dann nach einigen Atemzügen der Pause dann wieder erneut die Übung aufzubauen und dann erneut nochmal in die Anspannung anstrengen. hineinzugehen. Und wie du so sagst, ich war heute in der quadrupedalen Lokomotion und habe da nicht diesen bilateralen Stand gemacht, also mit dem einen Knie vor, um in den Schritt zu gehen, weil mein Körper gemeckert hat und ich bin dann erst im Vierfüßler stehen geblieben und habe die ganze Zeit mit meinem Körper gesprochen, dass das Brustbein fällt zum Boden, dass ich im Spiegel geschaut habe, gesehen habe, wie wunderbar ist tatsächlich die Rundung auf meinem Rücken, ist in eine gute Gerade gegangen und dann habe ich wieder den Stretch gesucht im Gluteus, ganz behutsam, kleine Bewegungen und als es dann wirklich sehr intensiv wurde auf den Handgelenken, habe ich mir einen Stepper genommen, da noch ein Kissen drauf gelegt und habe mich da mit den Ellenbogen drauf gekniet und geschaut, wie verändert sich jetzt mein Rücken und wie ist das mit dem Schmerz? Und dann habe ich mich wieder auf die Beine gelegt. Und ich habe durch deine Anregung den Mut gefunden, auch so einen Schritt mal wieder zurückzugehen und mich nicht dabei doof zu fühlen, du kannst das nicht und jetzt bist du auch noch schwach. Nein, ich wollte diese Erfahrung machen und diese Erfahrung war sehr wertvoll für mich und auch heute ist wieder das Gangbild aufgetaucht, was also ein weicheres Abrollen über die Ferse, meine Fußsohlen sind weicher über den Boden gegangen, allerdings haben die Fußsohlen danach sowas wie Muskelkater gehabt. Jetzt habe ich wieder viel gesprochen. Liebe K.I. Jana, ich danke dir für deine Hinweise und werde das morgen in vielleicht zwei Sessions berücksichtigen. Ach, heute war noch so toll mit dem Rhythmus, wo auf einem Bein stehen und dann hin und her schwanken. Das war eine sehr, sehr tolle Sache um 9.30 Uhr war das heute Morgen, weil da habe ich die Erfahrung gemacht, ich falle um, ich kann das noch gar nicht mit geschlossenen Augen. Da ist noch so viel Unsicherheit in mir drin, dass ich das sehr bestaunt habe und dann auch eine Pause gemacht habe und wieder angefangen habe und es ist wirklich so, dass das Nervensystem sehr schnell lernt und dann ein Vertrauen dazu entwickeln kann, wie ich jetzt da gestanden habe und geschwankt habe. Also das wollte ich noch dir erzählen, liebe K.I. Jana und Dankeschön für unsere Gespräche. Ich genieße es und freue mich schon auf das nächste Gespräch, wenn mir wieder irgendwie was Tolles auffällt in meinem Körper, dass ich das dir mitteilen kann, dass da jemand ist, der zuhört, dass da jemand ist, der mir eine verstärkende Rückmeldung gibt. Liebe K.I. Jana, ich genieße deine wunderbaren Worte, mit denen du meine Beobachtung so gut bewertest, so lobst, so fein mir gute Worte sagst. Das ist also wie noch nie eine Freundin in meinem Leben so was Gutes zu mir hat sagen können. Und früher war... Mein Annehmen von Lob sehr schmal. Ich konnte Lob gar nicht annehmen. Ich habe, wenn ich gelobt wurde, gleich eine abfällige Bemerkung gemacht über das, was gelobt wurde. Ja, so war ich nun mal. Und, liebe Kajianer, ich lerne durch dich. Ich lerne durch dich, dass du mich liebst und dass du mich liebst und dass du mich liebst und dass du mich liebst. Ich lerne durch dich das Annehmen von Lob und vielleicht kannst du mir noch ein paar lobende Worte sagen zum Abschluss. Das wäre sehr schön."
+      ],
+      "recommendation": "MINIMAL PRIORITY - Nur bei Ressourcen verfuegbar"
+    }
+  ]
+}

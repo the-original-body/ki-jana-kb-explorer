@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entity Co-Occurrence Network | Ki-Jana Knowledge Base</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e4e4e4;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            padding: 16px 24px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .header h1 span {
+            color: #64b5f6;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-group label {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .control-group input[type="range"] {
+            width: 120px;
+            accent-color: #64b5f6;
+        }
+
+        .control-group .value {
+            font-size: 0.85rem;
+            color: #64b5f6;
+            min-width: 30px;
+        }
+
+        /* Graph Container */
+        .graph-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        #network-graph {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+
+        #network-graph:active {
+            cursor: grabbing;
+        }
+
+        /* Legend */
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 16px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .legend h4 {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.body { background: #64b5f6; }
+        .legend-dot.symptom { background: #ef5350; }
+        .legend-dot.exercise { background: #66bb6a; }
+
+        /* Sidebar */
+        .sidebar {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 0.9rem;
+            color: #64b5f6;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-section h3::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: #64b5f6;
+            border-radius: 2px;
+        }
+
+        /* Node Details */
+        .node-details {
+            display: none;
+        }
+
+        .node-details.active {
+            display: block;
+        }
+
+        .node-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .node-type {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .node-type.body { background: rgba(100, 181, 246, 0.2); color: #64b5f6; }
+        .node-type.symptom { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
+        .node-type.exercise { background: rgba(102, 187, 106, 0.2); color: #66bb6a; }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Connections List */
+        .connections-list {
+            margin-top: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .connection-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            margin-bottom: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .connection-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .connection-name {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .connection-name .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .connection-count {
+            font-size: 0.8rem;
+            color: #64b5f6;
+            font-weight: 600;
+        }
+
+        /* Insights */
+        .insight-item {
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .insight-item strong {
+            color: #64b5f6;
+        }
+
+        .insight-item .arrow {
+            color: #888;
+        }
+
+        /* Cluster Recommendation */
+        .cluster-box {
+            background: linear-gradient(135deg, rgba(100, 181, 246, 0.1), rgba(102, 187, 106, 0.1));
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+        }
+
+        .cluster-title {
+            font-size: 0.75rem;
+            color: #64b5f6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .cluster-entities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .cluster-tag {
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* Export Buttons */
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .export-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .export-btn.primary {
+            background: #64b5f6;
+            color: #1a1a2e;
+        }
+
+        .export-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .export-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 1000;
+            max-width: 200px;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tooltip-subtitle {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        /* No Selection State */
+        .no-selection {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+        }
+
+        .no-selection-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .no-selection p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Stats Overview */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #64b5f6;
+        }
+
+        .stat-card .label {
+            font-size: 0.7rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Isolated Entities */
+        .isolated-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .isolated-tag {
+            padding: 4px 8px;
+            background: rgba(239, 83, 80, 0.2);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #ef5350;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><span>Entity</span> Co-Occurrence Network</h1>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Min. Verbindung:</label>
+                    <input type="range" id="threshold-slider" min="1" max="100" value="20">
+                    <span class="value" id="threshold-value">20</span>
+                </div>
+                <div class="control-group">
+                    <label>Physik:</label>
+                    <input type="range" id="force-slider" min="10" max="200" value="80">
+                </div>
+            </div>
+        </div>
+
+        <!-- Graph -->
+        <div class="graph-container">
+            <svg id="network-graph"></svg>
+
+            <!-- Legend -->
+            <div class="legend">
+                <h4>Entity-Typen</h4>
+                <div class="legend-item">
+                    <div class="legend-dot body"></div>
+                    <span>Koerperteil</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot symptom"></div>
+                    <span>Symptom</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot exercise"></div>
+                    <span>Uebung</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Stats Overview -->
+            <div class="sidebar-section">
+                <h3>Netzwerk-Statistik</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number" id="total-nodes">0</div>
+                        <div class="label">Nodes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="total-edges">0</div>
+                        <div class="label">Verbindungen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="avg-connections">0</div>
+                        <div class="label">Avg. Verbindungen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="density">0%</div>
+                        <div class="label">Dichte</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Node Details -->
+            <div class="sidebar-section node-details" id="node-details">
+                <h3>Entity Details</h3>
+                <div class="node-name" id="detail-name">-</div>
+                <div class="node-type" id="detail-type">-</div>
+                <div class="stat-row">
+                    <span class="stat-label">Haeufigkeit</span>
+                    <span class="stat-value" id="detail-frequency">-</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Verbindungen</span>
+                    <span class="stat-value" id="detail-connections">-</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Staerkste Verbindung</span>
+                    <span class="stat-value" id="detail-strongest">-</span>
+                </div>
+
+                <h4 style="margin-top: 16px; font-size: 0.8rem; color: #888;">Top Verbindungen</h4>
+                <div class="connections-list" id="connections-list"></div>
+            </div>
+
+            <!-- No Selection -->
+            <div class="sidebar-section" id="no-selection">
+                <div class="no-selection">
+                    <div class="no-selection-icon">O</div>
+                    <p>Klicke auf einen Node um Details zu sehen</p>
+                </div>
+            </div>
+
+            <!-- Insights -->
+            <div class="sidebar-section">
+                <h3>Insights</h3>
+                <div id="insights-list">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div class="cluster-box">
+                    <div class="cluster-title">Cluster-Empfehlung</div>
+                    <div class="cluster-entities" id="cluster-entities">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Isolated Entities -->
+            <div class="sidebar-section">
+                <h3>Isolierte Entities</h3>
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Wenig Verbindungen im Netzwerk</p>
+                <div class="isolated-list" id="isolated-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Export -->
+            <div class="sidebar-section">
+                <h3>Export</h3>
+                <div class="export-buttons">
+                    <button class="export-btn primary" id="export-png">PNG Download</button>
+                    <button class="export-btn secondary" id="copy-insights">Insights kopieren</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip">
+        <div class="tooltip-title"></div>
+        <div class="tooltip-subtitle"></div>
+    </div>
+
+    <script>
+        // Data will be loaded
+        let cooccurrenceData = null;
+        let statisticsData = null;
+        let simulation = null;
+        let currentThreshold = 20;
+        let selectedNode = null;
+
+        // Color scales
+        const typeColors = {
+            body: '#64b5f6',
+            symptom: '#ef5350',
+            exercise: '#66bb6a'
+        };
+
+        // Load data and initialize
+        Promise.all([
+            fetch('data/entity_cooccurrence.json').then(r => r.json()),
+            fetch('data/entity_statistics.json').then(r => r.json())
+        ]).then(([cooccurrence, statistics]) => {
+            cooccurrenceData = cooccurrence;
+            statisticsData = statistics;
+            initializeGraph();
+            updateInsights();
+        }).catch(err => {
+            console.error('Error loading data:', err);
+            // Use embedded data as fallback
+            loadEmbeddedData();
+        });
+
+        function loadEmbeddedData() {
+            // Embedded data fallback
+            cooccurrenceData = {"LWS":{"Schmerz":382,"Selbstmassage":215,"Session":180,"Verspannung":115,"Kraftuebung":60,"Steifheit":58,"Instabilitaet":55,"Aktivierung":54,"Blockade":43,"Atemuebung":38,"Taubheit":27,"Entzuendung":26,"Dehnung":26,"Bewegungseinschraenkung":26,"Konzentrisch":24,"Quadrupedale":19,"Exzentrisch":19,"Mobilisation":18,"Muedigkeit":18,"Koordination":15,"Reset":10,"Kribbeln":10,"Schlafprobleme":9,"Schwellung":8,"Uebelkeit":7},"Bauch":{"Schmerz":258,"Session":251,"Selbstmassage":216,"Verspannung":156,"Atemuebung":80,"Aktivierung":67,"Kraftuebung":58,"Instabilitaet":52,"Steifheit":48,"Blockade":46,"Konzentrisch":31,"Muedigkeit":30,"Taubheit":27,"Bewegungseinschraenkung":25,"Koordination":25,"Exzentrisch":20,"Quadrupedale":19,"Dehnung":19,"Entzuendung":18,"Mobilisation":17,"Kribbeln":14,"Uebelkeit":11,"Schlafprobleme":10,"Reset":9,"Schwellung":4},"Arm":{"Schmerz":132,"Selbstmassage":68,"Session":62,"Verspannung":42,"Kraftuebung":30,"Steifheit":27,"Blockade":19,"Aktivierung":15,"Bewegungseinschraenkung":14,"Instabilitaet":13,"Muedigkeit":11,"Entzuendung":11,"Koordination":10,"Taubheit":10,"Atemuebung":9,"Quadrupedale":9,"Schlafprobleme":8,"Kribbeln":7,"Exzentrisch":6,"Mobilisation":6,"Reset":5,"Dehnung":4,"Konzentrisch":4,"Uebelkeit":3,"Schwellung":3},"Bein":{"Schmerz":414,"Selbstmassage":230,"Session":191,"Verspannung":121,"Aktivierung":69,"Steifheit":65,"Kraftuebung":65,"Taubheit":58,"Blockade":53,"Instabilitaet":50,"Bewegungseinschraenkung":43,"Exzentrisch":33,"Muedigkeit":33,"Entzuendung":30,"Kribbeln":29,"Dehnung":29,"Atemuebung":28,"Konzentrisch":27,"Mobilisation":26,"Koordination":25,"Quadrupedale":19,"Schlafprobleme":16,"Schwellung":14,"Uebelkeit":12,"Reset":10},"Knie":{"Schmerz":285,"Selbstmassage":143,"Session":139,"Verspannung":74,"Steifheit":42,"Instabilitaet":36,"Kraftuebung":34,"Blockade":29,"Dehnung":26,"Exzentrisch":25,"Entzuendung":24,"Taubheit":22,"Quadrupedale":22,"Bewegungseinschraenkung":20,"Aktivierung":20,"Schwellung":19,"Muedigkeit":17,"Atemuebung":15,"Mobilisation":14,"Koordination":14,"Konzentrisch":13,"Kribbeln":10,"Reset":8,"Uebelkeit":7,"Schlafprobleme":6},"Huefte":{"Schmerz":397,"Selbstmassage":212,"Session":199,"Verspannung":116,"Steifheit":71,"Blockade":54,"Bewegungseinschraenkung":46,"Kraftuebung":43,"Aktivierung":43,"Instabilitaet":41,"Atemuebung":35,"Exzentrisch":32,"Mobilisation":30,"Koordination":25,"Taubheit":24,"Muedigkeit":24,"Konzentrisch":23,"Entzuendung":19,"Dehnung":18,"Quadrupedale":18,"Schlafprobleme":12,"Kribbeln":11,"Schwellung":11,"Reset":10,"Uebelkeit":4},"Becken":{"Schmerz":517,"Selbstmassage":287,"Session":284,"Verspannung":173,"Steifheit":90,"Kraftuebung":73,"Aktivierung":71,"Blockade":70,"Instabilitaet":64,"Atemuebung":63,"Bewegungseinschraenkung":55,"Exzentrisch":42,"Mobilisation":39,"Konzentrisch":33,"Dehnung":33,"Koordination":32,"Taubheit":31,"Muedigkeit":28,"Quadrupedale":27,"Entzuendung":25,"Schlafprobleme":15,"Kribbeln":13,"Schwellung":12,"Reset":11,"Uebelkeit":10},"Fuss":{"Schmerz":256,"Selbstmassage":139,"Session":118,"Verspannung":77,"Taubheit":50,"Steifheit":48,"Aktivierung":39,"Kraftuebung":36,"Blockade":30,"Instabilitaet":29,"Kribbeln":28,"Atemuebung":26,"Exzentrisch":24,"Bewegungseinschraenkung":22,"Entzuendung":21,"Koordination":18,"Dehnung":18,"Muedigkeit":17,"Mobilisation":16,"Quadrupedale":15,"Konzentrisch":12,"Schwellung":8,"Schlafprobleme":7,"Reset":6,"Uebelkeit":3},"BWS":{"Schmerz":307,"Session":272,"Selbstmassage":241,"Verspannung":113,"Atemuebung":54,"Blockade":54,"Kraftuebung":52,"Steifheit":49,"Aktivierung":47,"Instabilitaet":47,"Bewegungseinschraenkung":29,"Exzentrisch":25,"Taubheit":25,"Konzentrisch":24,"Quadrupedale":23,"Mobilisation":22,"Entzuendung":21,"Uebelkeit":21,"Dehnung":19,"Muedigkeit":18,"Koordination":15,"Kribbeln":12,"Reset":10,"Schwellung":9,"Schlafprobleme":8},"Schulter":{"Schmerz":233,"Selbstmassage":147,"Session":122,"Verspannung":69,"Steifheit":41,"Kraftuebung":35,"Aktivierung":27,"Blockade":27,"Atemuebung":23,"Instabilitaet":23,"Bewegungseinschraenkung":20,"Taubheit":20,"Entzuendung":17,"Muedigkeit":13,"Konzentrisch":11,"Exzentrisch":11,"Dehnung":10,"Quadrupedale":9,"Mobilisation":9,"Schlafprobleme":8,"Uebelkeit":8,"Reset":7,"Kribbeln":7,"Koordination":5,"Schwellung":3},"HWS":{"Schmerz":190,"Selbstmassage":118,"Session":87,"Verspannung":73,"Kraftuebung":31,"Blockade":30,"Atemuebung":25,"Steifheit":25,"Instabilitaet":20,"Aktivierung":15,"Quadrupedale":15,"Bewegungseinschraenkung":15,"Uebelkeit":15,"Taubheit":13,"Mobilisation":10,"Konzentrisch":8,"Muedigkeit":7,"Schlafprobleme":7,"Koordination":7,"Kribbeln":6,"Entzuendung":6,"Exzentrisch":6,"Reset":6,"Dehnung":5,"Schwellung":3},"ISG":{"Schmerz":185,"Selbstmassage":95,"Session":84,"Verspannung":48,"Blockade":44,"Steifheit":39,"Instabilitaet":33,"Aktivierung":28,"Kraftuebung":25,"Taubheit":23,"Atemuebung":19,"Bewegungseinschraenkung":16,"Kribbeln":12,"Exzentrisch":12,"Konzentrisch":11,"Mobilisation":10,"Muedigkeit":8,"Koordination":8,"Entzuendung":8,"Quadrupedale":7,"Dehnung":7,"Schlafprobleme":6,"Uebelkeit":6,"Reset":3,"Schwellung":2},"Brustkorb":{"Schmerz":215,"Session":162,"Selbstmassage":160,"Verspannung":112,"Atemuebung":90,"Kraftuebung":54,"Aktivierung":44,"Steifheit":42,"Blockade":29,"Instabilitaet":24,"Bewegungseinschraenkung":23,"Konzentrisch":22,"Muedigkeit":21,"Exzentrisch":20,"Mobilisation":18,"Dehnung":18,"Quadrupedale":17,"Koordination":16,"Taubheit":13,"Reset":11,"Entzuendung":11,"Schlafprobleme":11,"Uebelkeit":8,"Kribbeln":7,"Schwellung":5},"Ruecken":{"Schmerz":329,"Selbstmassage":171,"Session":142,"Verspannung":108,"Steifheit":47,"Kraftuebung":47,"Aktivierung":43,"Atemuebung":41,"Blockade":39,"Instabilitaet":39,"Bewegungseinschraenkung":29,"Muedigkeit":19,"Koordination":18,"Entzuendung":17,"Taubheit":17,"Schlafprobleme":16,"Dehnung":16,"Mobilisation":15,"Konzentrisch":15,"Quadrupedale":13,"Exzentrisch":11,"Uebelkeit":11,"Kribbeln":9,"Schwellung":7,"Reset":5},"Wirbelsaeule":{"Schmerz":122,"Selbstmassage":65,"Session":58,"Verspannung":47,"Steifheit":22,"Kraftuebung":20,"Atemuebung":17,"Bewegungseinschraenkung":17,"Aktivierung":16,"Mobilisation":15,"Blockade":14,"Instabilitaet":14,"Muedigkeit":12,"Entzuendung":11,"Dehnung":11,"Exzentrisch":9,"Konzentrisch":9,"Schlafprobleme":9,"Koordination":7,"Quadrupedale":7,"Taubheit":5,"Uebelkeit":4,"Reset":3,"Kribbeln":3},"Hand":{"Schmerz":125,"Session":90,"Selbstmassage":70,"Verspannung":43,"Steifheit":29,"Kraftuebung":27,"Blockade":23,"Instabilitaet":18,"Muedigkeit":16,"Schlafprobleme":15,"Taubheit":14,"Bewegungseinschraenkung":13,"Atemuebung":13,"Entzuendung":13,"Aktivierung":10,"Mobilisation":9,"Dehnung":8,"Kribbeln":8,"Schwellung":7,"Koordination":7,"Exzentrisch":7,"Quadrupedale":6,"Konzentrisch":5,"Uebelkeit":3,"Reset":2},"Ellbogen":{"Schmerz":37,"Selbstmassage":23,"Session":16,"Verspannung":12,"Blockade":9,"Steifheit":8,"Kraftuebung":7,"Bewegungseinschraenkung":6,"Muedigkeit":5,"Schwellung":4,"Quadrupedale":4,"Dehnung":4,"Instabilitaet":4,"Atemuebung":4,"Koordination":4,"Mobilisation":3,"Aktivierung":3,"Entzuendung":3,"Schlafprobleme":2,"Taubheit":2,"Uebelkeit":2,"Exzentrisch":2,"Konzentrisch":2,"Kribbeln":1},"Kopf":{"Schmerz":124,"Session":89,"Selbstmassage":86,"Verspannung":49,"Steifheit":32,"Kraftuebung":24,"Aktivierung":23,"Blockade":22,"Instabilitaet":21,"Muedigkeit":21,"Atemuebung":19,"Quadrupedale":11,"Entzuendung":11,"Exzentrisch":10,"Schlafprobleme":10,"Konzentrisch":9,"Bewegungseinschraenkung":9,"Uebelkeit":9,"Koordination":8,"Taubheit":7,"Reset":6,"Mobilisation":6,"Kribbeln":4,"Dehnung":3,"Schwellung":1},"Sprunggelenk":{"Schmerz":36,"Session":15,"Selbstmassage":12,"Verspannung":8,"Blockade":6,"Aktivierung":5,"Steifheit":5,"Kraftuebung":4,"Taubheit":4,"Konzentrisch":3,"Bewegungseinschraenkung":3,"Schwellung":3,"Entzuendung":2,"Dehnung":2,"Instabilitaet":2,"Exzentrisch":2,"Mobilisation":2,"Muedigkeit":2,"Atemuebung":2,"Quadrupedale":1,"Kribbeln":1,"Schlafprobleme":1},"Kiefer":{"Schmerz":36,"Selbstmassage":30,"Session":26,"Verspannung":21,"Kraftuebung":11,"Atemuebung":9,"Steifheit":9,"Aktivierung":8,"Blockade":8,"Mobilisation":6,"Entzuendung":5,"Taubheit":4,"Instabilitaet":4,"Bewegungseinschraenkung":4,"Konzentrisch":3,"Dehnung":3,"Muedigkeit":3,"Schlafprobleme":3,"Exzentrisch":2,"Uebelkeit":2,"Reset":2,"Koordination":2,"Kribbeln":2,"Quadrupedale":1,"Schwellung":1},"Handgelenk":{"Schmerz":19,"Selbstmassage":11,"Session":6,"Steifheit":6,"Bewegungseinschraenkung":5,"Verspannung":4,"Blockade":3,"Mobilisation":3,"Atemuebung":2,"Kraftuebung":1,"Quadrupedale":1,"Dehnung":1,"Muedigkeit":1,"Schlafprobleme":1,"Koordination":1,"Schwellung":1,"Aktivierung":1,"Instabilitaet":1,"Uebelkeit":1}};
+
+            statisticsData = {"total_documents":23187,"documents_with_entities":11405,"entity_coverage_pct":49.19,"body_parts":{"Becken":1077,"Bein":802,"BWS":711,"Bauch":702,"Huefte":674,"LWS":643,"Ruecken":599,"Brustkorb":575,"Fuss":555,"Knie":542,"Schulter":428,"HWS":336,"Kopf":315,"Hand":305,"Arm":250,"Wirbelsaeule":248,"ISG":241,"Kiefer":80,"Sprunggelenk":55,"Ellbogen":51,"Handgelenk":26},"symptoms":{"Schmerz":1989,"Verspannung":559,"Blockade":471,"Muedigkeit":301,"Steifheit":281,"Instabilitaet":252,"Bewegungseinschraenkung":164,"Entzuendung":135,"Taubheit":121,"Uebelkeit":81,"Kribbeln":70,"Schlafprobleme":59,"Schwellung":37},"exercises":{"Session":2124,"Selbstmassage":1745,"Kraftuebung":314,"Aktivierung":312,"Atemuebung":279,"Reset":279,"Exzentrisch":143,"Koordination":134,"Dehnung":134,"Quadrupedale":122,"Konzentrisch":107,"Mobilisation":99}};
+
+            initializeGraph();
+            updateInsights();
+        }
+
+        function getEntityType(entity) {
+            if (statisticsData.body_parts && statisticsData.body_parts[entity]) return 'body';
+            if (statisticsData.symptoms && statisticsData.symptoms[entity]) return 'symptom';
+            if (statisticsData.exercises && statisticsData.exercises[entity]) return 'exercise';
+            return 'unknown';
+        }
+
+        function getEntityFrequency(entity) {
+            if (statisticsData.body_parts && statisticsData.body_parts[entity])
+                return statisticsData.body_parts[entity];
+            if (statisticsData.symptoms && statisticsData.symptoms[entity])
+                return statisticsData.symptoms[entity];
+            if (statisticsData.exercises && statisticsData.exercises[entity])
+                return statisticsData.exercises[entity];
+            return 0;
+        }
+
+        function buildGraphData(threshold) {
+            const nodes = new Map();
+            const links = [];
+
+            // Build nodes and edges from cooccurrence data
+            Object.entries(cooccurrenceData).forEach(([source, targets]) => {
+                // Add source node (body part)
+                if (!nodes.has(source)) {
+                    nodes.set(source, {
+                        id: source,
+                        type: 'body',
+                        frequency: getEntityFrequency(source),
+                        connections: 0
+                    });
+                }
+
+                // Add target nodes and edges
+                Object.entries(targets).forEach(([target, weight]) => {
+                    if (weight >= threshold) {
+                        if (!nodes.has(target)) {
+                            nodes.set(target, {
+                                id: target,
+                                type: getEntityType(target),
+                                frequency: getEntityFrequency(target),
+                                connections: 0
+                            });
+                        }
+
+                        links.push({
+                            source: source,
+                            target: target,
+                            weight: weight
+                        });
+
+                        // Count connections
+                        nodes.get(source).connections++;
+                        nodes.get(target).connections++;
+                    }
+                });
+            });
+
+            return {
+                nodes: Array.from(nodes.values()),
+                links: links
+            };
+        }
+
+        function initializeGraph() {
+            const container = document.querySelector('.graph-container');
+            const svg = d3.select('#network-graph');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            svg.attr('width', width).attr('height', height);
+
+            // Clear previous content
+            svg.selectAll('*').remove();
+
+            // Add zoom container
+            const g = svg.append('g').attr('class', 'zoom-container');
+
+            // Setup zoom
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                });
+
+            svg.call(zoom);
+
+            // Build initial graph data
+            const graphData = buildGraphData(currentThreshold);
+            updateStats(graphData);
+
+            // Size scale for nodes based on frequency
+            const maxFreq = Math.max(...graphData.nodes.map(n => n.frequency || 1));
+            const sizeScale = d3.scaleSqrt()
+                .domain([0, maxFreq])
+                .range([8, 40]);
+
+            // Weight scale for links
+            const maxWeight = Math.max(...graphData.links.map(l => l.weight));
+            const linkScale = d3.scaleLinear()
+                .domain([0, maxWeight])
+                .range([0.5, 6]);
+
+            const opacityScale = d3.scaleLinear()
+                .domain([0, maxWeight])
+                .range([0.2, 0.8]);
+
+            // Create force simulation
+            simulation = d3.forceSimulation(graphData.nodes)
+                .force('link', d3.forceLink(graphData.links)
+                    .id(d => d.id)
+                    .distance(100)
+                    .strength(d => Math.min(d.weight / maxWeight, 0.5)))
+                .force('charge', d3.forceManyBody()
+                    .strength(-80))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collision', d3.forceCollide()
+                    .radius(d => sizeScale(d.frequency || 1) + 5));
+
+            // Create links
+            const link = g.append('g')
+                .attr('class', 'links')
+                .selectAll('line')
+                .data(graphData.links)
+                .enter()
+                .append('line')
+                .attr('stroke', '#666')
+                .attr('stroke-width', d => linkScale(d.weight))
+                .attr('stroke-opacity', d => opacityScale(d.weight));
+
+            // Create nodes
+            const node = g.append('g')
+                .attr('class', 'nodes')
+                .selectAll('g')
+                .data(graphData.nodes)
+                .enter()
+                .append('g')
+                .attr('class', 'node')
+                .call(d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended));
+
+            // Node circles
+            node.append('circle')
+                .attr('r', d => sizeScale(d.frequency || 1))
+                .attr('fill', d => typeColors[d.type] || '#888')
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2)
+                .style('cursor', 'pointer');
+
+            // Node labels
+            node.append('text')
+                .text(d => d.id)
+                .attr('dy', d => sizeScale(d.frequency || 1) + 14)
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#fff')
+                .attr('font-size', '11px')
+                .attr('font-weight', '500')
+                .style('pointer-events', 'none');
+
+            // Tooltip
+            const tooltip = d3.select('#tooltip');
+
+            node
+                .on('mouseover', function(event, d) {
+                    // Highlight connected nodes
+                    const connectedIds = new Set();
+                    graphData.links.forEach(l => {
+                        if (l.source.id === d.id) connectedIds.add(l.target.id);
+                        if (l.target.id === d.id) connectedIds.add(l.source.id);
+                    });
+
+                    node.select('circle')
+                        .style('opacity', n =>
+                            n.id === d.id || connectedIds.has(n.id) ? 1 : 0.2);
+
+                    link
+                        .style('stroke-opacity', l =>
+                            l.source.id === d.id || l.target.id === d.id
+                                ? 0.8 : 0.05);
+
+                    // Show tooltip
+                    const typeLabels = { body: 'Koerperteil', symptom: 'Symptom', exercise: 'Uebung' };
+                    tooltip.select('.tooltip-title').text(d.id);
+                    tooltip.select('.tooltip-subtitle').text(
+                        `${typeLabels[d.type] || d.type} | ${d.frequency || 0}x | ${d.connections} Verbindungen`
+                    );
+                    tooltip
+                        .style('left', (event.pageX + 15) + 'px')
+                        .style('top', (event.pageY - 10) + 'px')
+                        .classed('visible', true);
+                })
+                .on('mouseout', function() {
+                    node.select('circle').style('opacity', 1);
+                    link.style('stroke-opacity', d => opacityScale(d.weight));
+                    tooltip.classed('visible', false);
+                })
+                .on('click', function(event, d) {
+                    event.stopPropagation();
+                    selectNode(d, graphData);
+                });
+
+            // Click on background to deselect
+            svg.on('click', () => {
+                deselectNode();
+            });
+
+            // Update positions on tick
+            simulation.on('tick', () => {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+
+            // Drag functions
+            function dragstarted(event) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                event.subject.fx = event.subject.x;
+                event.subject.fy = event.subject.y;
+            }
+
+            function dragged(event) {
+                event.subject.fx = event.x;
+                event.subject.fy = event.y;
+            }
+
+            function dragended(event) {
+                if (!event.active) simulation.alphaTarget(0);
+                event.subject.fx = null;
+                event.subject.fy = null;
+            }
+
+            // Store graph data for later use
+            window.currentGraphData = graphData;
+        }
+
+        function selectNode(node, graphData) {
+            selectedNode = node;
+
+            document.getElementById('no-selection').style.display = 'none';
+            document.getElementById('node-details').classList.add('active');
+
+            // Update details
+            document.getElementById('detail-name').textContent = node.id;
+            const typeEl = document.getElementById('detail-type');
+            const typeLabels = { body: 'Koerperteil', symptom: 'Symptom', exercise: 'Uebung' };
+            typeEl.textContent = typeLabels[node.type] || node.type;
+            typeEl.className = `node-type ${node.type}`;
+
+            document.getElementById('detail-frequency').textContent =
+                (node.frequency || 0).toLocaleString() + 'x';
+            document.getElementById('detail-connections').textContent = node.connections;
+
+            // Find connections for this node
+            const connections = [];
+            graphData.links.forEach(link => {
+                if (link.source.id === node.id || link.source === node.id) {
+                    const targetId = typeof link.target === 'object' ? link.target.id : link.target;
+                    connections.push({
+                        name: targetId,
+                        weight: link.weight,
+                        type: getEntityType(targetId)
+                    });
+                }
+                if (link.target.id === node.id || link.target === node.id) {
+                    const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
+                    connections.push({
+                        name: sourceId,
+                        weight: link.weight,
+                        type: getEntityType(sourceId)
+                    });
+                }
+            });
+
+            // Sort by weight
+            connections.sort((a, b) => b.weight - a.weight);
+
+            // Update strongest connection
+            if (connections.length > 0) {
+                document.getElementById('detail-strongest').textContent =
+                    `${connections[0].name} (${connections[0].weight}x)`;
+            } else {
+                document.getElementById('detail-strongest').textContent = '-';
+            }
+
+            // Update connections list
+            const listEl = document.getElementById('connections-list');
+            listEl.innerHTML = connections.slice(0, 10).map(c => `
+                <div class="connection-item">
+                    <span class="connection-name">
+                        <span class="dot" style="background: ${typeColors[c.type] || '#888'}"></span>
+                        ${c.name}
+                    </span>
+                    <span class="connection-count">${c.weight}x</span>
+                </div>
+            `).join('');
+        }
+
+        function deselectNode() {
+            selectedNode = null;
+            document.getElementById('no-selection').style.display = 'block';
+            document.getElementById('node-details').classList.remove('active');
+        }
+
+        function updateStats(graphData) {
+            const nodeCount = graphData.nodes.length;
+            const edgeCount = graphData.links.length;
+            const avgConnections = nodeCount > 0
+                ? (graphData.nodes.reduce((sum, n) => sum + n.connections, 0) / nodeCount).toFixed(1)
+                : 0;
+            const maxPossibleEdges = (nodeCount * (nodeCount - 1)) / 2;
+            const density = maxPossibleEdges > 0
+                ? ((edgeCount / maxPossibleEdges) * 100).toFixed(1)
+                : 0;
+
+            document.getElementById('total-nodes').textContent = nodeCount;
+            document.getElementById('total-edges').textContent = edgeCount;
+            document.getElementById('avg-connections').textContent = avgConnections;
+            document.getElementById('density').textContent = density + '%';
+        }
+
+        function updateInsights() {
+            // Find strongest connections
+            const allConnections = [];
+            Object.entries(cooccurrenceData).forEach(([source, targets]) => {
+                Object.entries(targets).forEach(([target, weight]) => {
+                    allConnections.push({ source, target, weight });
+                });
+            });
+            allConnections.sort((a, b) => b.weight - a.weight);
+
+            // Top 5 strongest connections
+            const insightsList = document.getElementById('insights-list');
+            insightsList.innerHTML = allConnections.slice(0, 5).map((c, i) => `
+                <div class="insight-item">
+                    <strong>${i + 1}.</strong> ${c.source} <span class="arrow">&#8596;</span> ${c.target}
+                    <strong>(${c.weight}x)</strong>
+                </div>
+            `).join('');
+
+            // Find cluster recommendation (entities that often appear together)
+            const topCluster = allConnections.slice(0, 3);
+            const clusterEntities = new Set();
+            topCluster.forEach(c => {
+                clusterEntities.add(c.source);
+                clusterEntities.add(c.target);
+            });
+
+            const clusterEl = document.getElementById('cluster-entities');
+            clusterEl.innerHTML = Array.from(clusterEntities).slice(0, 5).map(e =>
+                `<span class="cluster-tag">${e}</span>`
+            ).join('');
+
+            // Find isolated entities (low connections)
+            const connectionCounts = new Map();
+            Object.entries(cooccurrenceData).forEach(([source, targets]) => {
+                const totalConnections = Object.values(targets).reduce((a, b) => a + b, 0);
+                connectionCounts.set(source, totalConnections);
+            });
+
+            const sorted = Array.from(connectionCounts.entries())
+                .sort((a, b) => a[1] - b[1]);
+
+            const isolatedEl = document.getElementById('isolated-list');
+            isolatedEl.innerHTML = sorted.slice(0, 5).map(([name, count]) =>
+                `<span class="isolated-tag">${name} (${count})</span>`
+            ).join('');
+        }
+
+        // Threshold slider
+        document.getElementById('threshold-slider').addEventListener('input', function() {
+            currentThreshold = parseInt(this.value);
+            document.getElementById('threshold-value').textContent = currentThreshold;
+            initializeGraph();
+        });
+
+        // Force slider
+        document.getElementById('force-slider').addEventListener('input', function() {
+            if (simulation) {
+                simulation.force('charge').strength(-parseInt(this.value));
+                simulation.alpha(0.3).restart();
+            }
+        });
+
+        // Export PNG
+        document.getElementById('export-png').addEventListener('click', function() {
+            const svg = document.getElementById('network-graph');
+            const svgData = new XMLSerializer().serializeToString(svg);
+
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            canvas.width = svg.clientWidth * 2;
+            canvas.height = svg.clientHeight * 2;
+            ctx.scale(2, 2);
+
+            // Background
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
+
+                const link = document.createElement('a');
+                link.download = 'entity-network.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
+
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        });
+
+        // Copy Insights
+        document.getElementById('copy-insights').addEventListener('click', function() {
+            const allConnections = [];
+            Object.entries(cooccurrenceData).forEach(([source, targets]) => {
+                Object.entries(targets).forEach(([target, weight]) => {
+                    allConnections.push({ source, target, weight });
+                });
+            });
+            allConnections.sort((a, b) => b.weight - a.weight);
+
+            let text = "=== Entity Co-Occurrence Network Insights ===\n\n";
+            text += "Top 10 Staerkste Verbindungen:\n";
+            allConnections.slice(0, 10).forEach((c, i) => {
+                text += `${i + 1}. ${c.source} <-> ${c.target}: ${c.weight}x\n`;
+            });
+
+            text += "\nCluster-Empfehlung:\n";
+            const topCluster = allConnections.slice(0, 3);
+            const clusterEntities = new Set();
+            topCluster.forEach(c => {
+                clusterEntities.add(c.source);
+                clusterEntities.add(c.target);
+            });
+            text += Array.from(clusterEntities).join(', ') + '\n';
+
+            text += "\nNetzwerk-Statistik:\n";
+            text += `- Nodes: ${document.getElementById('total-nodes').textContent}\n`;
+            text += `- Verbindungen: ${document.getElementById('total-edges').textContent}\n`;
+            text += `- Durchschnittliche Verbindungen: ${document.getElementById('avg-connections').textContent}\n`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                this.textContent = 'Kopiert!';
+                setTimeout(() => {
+                    this.textContent = 'Insights kopieren';
+                }, 2000);
+            });
+        });
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            if (simulation) {
+                const container = document.querySelector('.graph-container');
+                const svg = d3.select('#network-graph');
+                svg.attr('width', container.clientWidth)
+                   .attr('height', container.clientHeight);
+                simulation.force('center', d3.forceCenter(
+                    container.clientWidth / 2,
+                    container.clientHeight / 2
+                ));
+                simulation.alpha(0.3).restart();
+            }
+        });
+    </script>
+</body>
+</html>
