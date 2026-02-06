@@ -1,0 +1,56 @@
+{
+  "name": "TOB Claude Enabled",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
+  },
+  "mounts": [
+    "source=claude-credentials-${devcontainerId},target=/home/vscode/.claude,type=volume",
+    "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind"
+  ],
+  "containerEnv": {
+    "UV_PROJECT_ENVIRONMENT": "/workspaces/${localWorkspaceFolderBasename}/.venv",
+    "UV_LINK_MODE": "copy",
+    "UV_COMPILE_BYTECODE": "1",
+    "TEMPLATE_UPSTREAM": "https://github.com/the-original-body/tob-webapp-stack.git",
+    "TEMPLATE_ACCESS_TOKEN": "${localEnv:TEMPLATE_ACCESS_TOKEN}",
+    "SSH_AUTH_SOCK": "/ssh-agent"
+  },
+  "secrets": {
+    "TEMPLATE_ACCESS_TOKEN": {
+      "description": "GitHub PAT with write access to tob-webapp-stack. Required for /propose-upstream. Git operations fall back to SSH keys or GITHUB_TOKEN if not set."
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
+      }
+    },
+    "codespaces": {
+      "openFiles": [
+        "CLAUDE.md"
+      ]
+    }
+  },
+  "postCreateCommand": "su vscode -c 'bash .devcontainer/post-create.sh'",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+  "forwardPorts": [
+    3000,
+    8787
+  ],
+  "remoteUser": "vscode",
+  "containerUser": "vscode"
+}

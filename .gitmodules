@@ -1,0 +1,3 @@
+[submodule "lib/auto-claude"]
+	path = lib/auto-claude
+	url = https://github.com/the-original-body/auto-claude.git

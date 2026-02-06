@@ -1,0 +1,59 @@
+{
+  "name": "redwoodsdk-template",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Production-grade template for React Server Components on Cloudflare Workers using RedwoodSDK",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "test:e2e": "npx playwright test",
+    "test:e2e:chromium": "npx playwright test --project=chromium",
+    "deploy": "wrangler deploy",
+    "deploy:preview": "wrangler deploy --env preview --name redwoodsdk-template-preview",
+    "deploy:staging": "wrangler deploy --env staging --name redwoodsdk-template-staging",
+    "deploy:production": "wrangler deploy --name redwoodsdk-template"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.4",
+    "@radix-ui/react-tabs": "^1.1.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "rwsdk": "^1.0.0-beta.42",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241205.0",
+    "@playwright/test": "^1.48.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "prettier": "^3.4.2",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.1.0",
+    "vitest": "^4.0.16",
+    "wrangler": "^4.56.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

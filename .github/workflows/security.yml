@@ -1,0 +1,85 @@
+name: Security
+
+on:
+  push:
+    branches:
+      - 'preview/*'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Minimal permissions required
+permissions:
+  contents: read
+  security-events: write
+
+# Cancel in-progress runs for the same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ==============================================================================
+  # Secret Scanning - Detect committed secrets before they reach production
+  # ==============================================================================
+  secret_scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+      - name: Post scan results
+        if: failure()
+        run: |
+          echo "## ⚠️ Secret Scanning Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Potential secrets or sensitive data detected in this commit." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Action Required:**" >> $GITHUB_STEP_SUMMARY
+          echo "1. Review the Gitleaks output above" >> $GITHUB_STEP_SUMMARY
+          echo "2. Remove any committed secrets from the repository history" >> $GITHUB_STEP_SUMMARY
+          echo "3. Rotate any exposed credentials immediately" >> $GITHUB_STEP_SUMMARY
+          echo "4. Add secrets to \`.gitignore\` or use environment variables" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "See [Gitleaks documentation](https://github.com/gitleaks/gitleaks) for more information." >> $GITHUB_STEP_SUMMARY
+
+  # ==============================================================================
+  # Dependency Audit - Check for vulnerable dependencies
+  # ==============================================================================
+  dependency_audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Post audit results
+        if: failure()
+        run: |
+          echo "## ⚠️ Dependency Audit Warning" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "High or critical severity vulnerabilities found in dependencies." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Run \`npm audit\` locally to see details and fix with \`npm audit fix\`." >> $GITHUB_STEP_SUMMARY

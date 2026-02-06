@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# pre-commit hook - Protect main branch from direct commits
+#
+# This hook prevents accidental commits directly to the main branch.
+# All changes should go through feature branches and PRs.
+#
+# Installation:
+#   bash .claude/scripts/install-hooks.sh
+
+BRANCH=$(git branch --show-current)
+
+if [ "$BRANCH" = "main" ]; then
+    cat <<EOF
+❌ Direct commits to 'main' branch are not allowed!
+
+All changes must go through feature branches and pull requests.
+
+To fix this:
+  1. Create a feature branch:
+     git checkout -b feat/your-feature-name
+
+  2. Move your changes to the new branch:
+     git reset --soft HEAD~1  # if you already committed
+     # or just commit on the new branch
+
+  3. Follow the usual workflow:
+     - Make changes and commit
+     - Push branch: git push -u origin feat/your-feature-name
+     - Create PR: gh pr create
+
+If you absolutely must commit to main (e.g., emergency hotfix):
+  git commit --no-verify
+
+EOF
+    exit 1
+fi
+
+# Allow commit on other branches
+exit 0

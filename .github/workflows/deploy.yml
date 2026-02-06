@@ -1,0 +1,450 @@
+name: Deploy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - main
+      - 'preview/*'
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Deployment target'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - all
+          - preview
+          - staging
+          - production
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  # ============================================================================
+  # DYNAMIC NAMING - Derived from repository name
+  # When you "Use this template", these automatically become your app name
+  # ⚠️  DO NOT manually edit APP_NAME - it's automatically derived from the repo
+  # ⚠️  These values replace __APP_NAME__ and __DOMAIN_SUFFIX__ in wrangler.jsonc
+  # ============================================================================
+  APP_NAME: ${{ github.event.repository.name }}
+  DOMAIN_SUFFIX: tob.sh
+
+jobs:
+  # ==============================================================================
+  # Test Job - Always runs for all triggers
+  # ==============================================================================
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sanitize App Name
+        run: |
+          SANITIZED_NAME=$(echo "${{ env.APP_NAME }}" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | sed 's/[^a-z0-9-]//g')
+          echo "SANITIZED_NAME=$SANITIZED_NAME" >> $GITHUB_ENV
+
+      - name: Configure wrangler.jsonc
+        # Replace placeholder values in wrangler.jsonc with actual values
+        # ⚠️  This is the ONLY place where __APP_NAME__ and __DOMAIN_SUFFIX__ should be replaced
+        run: |
+          sed -i "s/__APP_NAME__/${{ env.SANITIZED_NAME }}/g" wrangler.jsonc
+          sed -i "s/__DOMAIN_SUFFIX__/${{ env.DOMAIN_SUFFIX }}/g" wrangler.jsonc
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run type checking
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+        env:
+          CLOUDFLARE_ENV: staging
+          GIT_SHA: ${{ github.sha }}
+          BUILD_TIME: ${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}
+
+  # ==============================================================================
+  # Deploy Preview
+  # Triggers: PR against main, push to preview/*, or workflow_dispatch
+  # ==============================================================================
+  deploy_preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) ||
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/preview/')) ||
+      (github.event_name == 'workflow_dispatch' && (inputs.target == 'all' || inputs.target == 'preview'))
+    environment:
+      name: preview
+      url: https://${{ env.APP_NAME }}-preview.${{ env.DOMAIN_SUFFIX }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sanitize App Name
+        run: |
+          SANITIZED_NAME=$(echo "${{ env.APP_NAME }}" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | sed 's/[^a-z0-9-]//g')
+          echo "SANITIZED_NAME=$SANITIZED_NAME" >> $GITHUB_ENV
+
+      - name: Configure wrangler.jsonc
+        # Replace placeholder values in wrangler.jsonc with actual values
+        # ⚠️  This is the ONLY place where __APP_NAME__ and __DOMAIN_SUFFIX__ should be replaced
+        run: |
+          sed -i "s/__APP_NAME__/${{ env.SANITIZED_NAME }}/g" wrangler.jsonc
+          sed -i "s/__DOMAIN_SUFFIX__/${{ env.DOMAIN_SUFFIX }}/g" wrangler.jsonc
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          CLOUDFLARE_ENV: preview
+          GIT_SHA: ${{ github.sha }}
+          BUILD_TIME: ${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}
+
+      - name: Setup D1 Database
+        if: hashFiles('wrangler.jsonc') != ''
+        run: |
+          # Extract database name from wrangler.jsonc (stripping comments for JSON parsing)
+          DB_NAME=$(sed 's|//.*$||g' wrangler.jsonc | jq -r '.env.preview.d1_databases[0].database_name // empty')
+
+          if [ -n "$DB_NAME" ]; then
+            echo "Setting up D1 database: $DB_NAME"
+
+            # Check if database exists, create if not
+            EXISTING=$(npx wrangler d1 list --json 2>/dev/null || echo "[]")
+            DB_ID=$(echo "$EXISTING" | jq -r --arg name "$DB_NAME" '.[] | select(.name == $name) | .uuid // empty')
+
+            if [ -z "$DB_ID" ]; then
+              echo "Creating database..."
+              OUTPUT=$(npx wrangler d1 create "$DB_NAME" 2>&1)
+              DB_ID=$(echo "$OUTPUT" | grep -oP 'database_id\s*=\s*"\K[^"]+' || echo "$OUTPUT" | grep -oP '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' | head -1)
+            fi
+
+            if [ -n "$DB_ID" ]; then
+              # Update both source and built configs
+              for CONFIG in wrangler.jsonc dist/worker/wrangler.json; do
+                [ -f "$CONFIG" ] && sed -i "s/__D1_DATABASE_ID__/$DB_ID/g" "$CONFIG"
+              done
+
+              # Apply migrations if they exist
+              if [ -d "migrations" ] && [ -n "$(ls -A migrations/*.sql 2>/dev/null)" ]; then
+                echo "Applying migrations..."
+                npx wrangler d1 migrations apply "$DB_NAME" --remote --env preview || true
+              fi
+            fi
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Set Worker Secret
+        run: |
+          SECRET=$(echo -n "${{ secrets.ORG_SECRET_SEED }}-${{ github.repository_id }}-preview" | sha256sum | cut -d' ' -f1 | base64 | head -c 64)
+          printf "%s" "$SECRET" | npx wrangler secret put SESSION_COOKIE_SECRET --env preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy to Preview
+        run: npx wrangler deploy --env preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deployment Summary
+        run: |
+          echo "## Preview Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **URL:** https://${{ env.SANITIZED_NAME }}-preview.${{ env.DOMAIN_SUFFIX }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Branch: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+
+  # ==============================================================================
+  # E2E Tests - Run Playwright tests against preview deployment
+  # ==============================================================================
+  e2e_tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [deploy_preview]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sanitize App Name
+        run: |
+          SANITIZED_NAME=$(echo "${{ env.APP_NAME }}" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | sed 's/[^a-z0-9-]//g')
+          echo "SANITIZED_NAME=$SANITIZED_NAME" >> $GITHUB_ENV
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: npm run test:e2e:chromium
+        env:
+          PREVIEW_URL: https://${{ env.SANITIZED_NAME }}-preview.${{ env.DOMAIN_SUFFIX }}
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  # ==============================================================================
+  # Deploy Staging
+  # Triggers: push to main, or workflow_dispatch
+  # ==============================================================================
+  deploy_staging:
+    name: Deploy Staging
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && (inputs.target == 'all' || inputs.target == 'staging'))
+    environment:
+      name: staging
+      url: https://${{ env.APP_NAME }}-staging.${{ env.DOMAIN_SUFFIX }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sanitize App Name
+        run: |
+          SANITIZED_NAME=$(echo "${{ env.APP_NAME }}" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | sed 's/[^a-z0-9-]//g')
+          echo "SANITIZED_NAME=$SANITIZED_NAME" >> $GITHUB_ENV
+
+      - name: Configure wrangler.jsonc
+        # Replace placeholder values in wrangler.jsonc with actual values
+        # ⚠️  This is the ONLY place where __APP_NAME__ and __DOMAIN_SUFFIX__ should be replaced
+        run: |
+          sed -i "s/__APP_NAME__/${{ env.SANITIZED_NAME }}/g" wrangler.jsonc
+          sed -i "s/__DOMAIN_SUFFIX__/${{ env.DOMAIN_SUFFIX }}/g" wrangler.jsonc
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          CLOUDFLARE_ENV: staging
+          GIT_SHA: ${{ github.sha }}
+          BUILD_TIME: ${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}
+
+      - name: Setup D1 Database
+        if: hashFiles('wrangler.jsonc') != ''
+        run: |
+          # Extract database name from wrangler.jsonc (stripping comments for JSON parsing)
+          DB_NAME=$(sed 's|//.*$||g' wrangler.jsonc | jq -r '.env.staging.d1_databases[0].database_name // empty')
+
+          if [ -n "$DB_NAME" ]; then
+            echo "Setting up D1 database: $DB_NAME"
+
+            # Check if database exists, create if not
+            EXISTING=$(npx wrangler d1 list --json 2>/dev/null || echo "[]")
+            DB_ID=$(echo "$EXISTING" | jq -r --arg name "$DB_NAME" '.[] | select(.name == $name) | .uuid // empty')
+
+            if [ -z "$DB_ID" ]; then
+              echo "Creating database..."
+              OUTPUT=$(npx wrangler d1 create "$DB_NAME" 2>&1)
+              DB_ID=$(echo "$OUTPUT" | grep -oP 'database_id\s*=\s*"\K[^"]+' || echo "$OUTPUT" | grep -oP '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' | head -1)
+            fi
+
+            if [ -n "$DB_ID" ]; then
+              # Update both source and built configs
+              for CONFIG in wrangler.jsonc dist/worker/wrangler.json; do
+                [ -f "$CONFIG" ] && sed -i "s/__D1_DATABASE_ID__/$DB_ID/g" "$CONFIG"
+              done
+
+              # Apply migrations if they exist
+              if [ -d "migrations" ] && [ -n "$(ls -A migrations/*.sql 2>/dev/null)" ]; then
+                echo "Applying migrations..."
+                npx wrangler d1 migrations apply "$DB_NAME" --remote --env staging || true
+              fi
+            fi
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Set Worker Secret
+        run: |
+          SECRET=$(echo -n "${{ secrets.ORG_SECRET_SEED }}-${{ github.repository_id }}-staging" | sha256sum | cut -d' ' -f1 | base64 | head -c 64)
+          printf "%s" "$SECRET" | npx wrangler secret put SESSION_COOKIE_SECRET --env staging
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy to Staging
+        run: npx wrangler deploy --env staging
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deployment Summary
+        run: |
+          echo "## Staging Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **URL:** https://${{ env.SANITIZED_NAME }}-staging.${{ env.DOMAIN_SUFFIX }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+
+  # ==============================================================================
+  # Deploy Production
+  # Triggers: tag v*, or workflow_dispatch
+  # ==============================================================================
+  deploy_production:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: |
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'workflow_dispatch' && (inputs.target == 'all' || inputs.target == 'production'))
+    environment:
+      name: production
+      url: https://${{ env.APP_NAME }}.${{ env.DOMAIN_SUFFIX }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sanitize App Name
+        run: |
+          SANITIZED_NAME=$(echo "${{ env.APP_NAME }}" | tr '[:upper:]' '[:lower:]' | tr '_' '-' | sed 's/[^a-z0-9-]//g')
+          echo "SANITIZED_NAME=$SANITIZED_NAME" >> $GITHUB_ENV
+
+      - name: Configure wrangler.jsonc
+        # Replace placeholder values in wrangler.jsonc with actual values
+        # ⚠️  This is the ONLY place where __APP_NAME__ and __DOMAIN_SUFFIX__ should be replaced
+        run: |
+          sed -i "s/__APP_NAME__/${{ env.SANITIZED_NAME }}/g" wrangler.jsonc
+          sed -i "s/__DOMAIN_SUFFIX__/${{ env.DOMAIN_SUFFIX }}/g" wrangler.jsonc
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          CLOUDFLARE_ENV: production
+          GIT_SHA: ${{ github.sha }}
+          BUILD_TIME: ${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}
+
+      - name: Setup D1 Database
+        if: hashFiles('wrangler.jsonc') != ''
+        run: |
+          # Extract database name from wrangler.jsonc (stripping comments for JSON parsing)
+          DB_NAME=$(sed 's|//.*$||g' wrangler.jsonc | jq -r '.env.production.d1_databases[0].database_name // empty')
+
+          if [ -n "$DB_NAME" ]; then
+            echo "Setting up D1 database: $DB_NAME"
+
+            # Check if database exists, create if not
+            EXISTING=$(npx wrangler d1 list --json 2>/dev/null || echo "[]")
+            DB_ID=$(echo "$EXISTING" | jq -r --arg name "$DB_NAME" '.[] | select(.name == $name) | .uuid // empty')
+
+            if [ -z "$DB_ID" ]; then
+              echo "Creating database..."
+              OUTPUT=$(npx wrangler d1 create "$DB_NAME" 2>&1)
+              DB_ID=$(echo "$OUTPUT" | grep -oP 'database_id\s*=\s*"\K[^"]+' || echo "$OUTPUT" | grep -oP '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}' | head -1)
+            fi
+
+            if [ -n "$DB_ID" ]; then
+              # Update both source and built configs
+              for CONFIG in wrangler.jsonc dist/worker/wrangler.json; do
+                [ -f "$CONFIG" ] && sed -i "s/__D1_DATABASE_ID__/$DB_ID/g" "$CONFIG"
+              done
+
+              # Apply migrations if they exist
+              if [ -d "migrations" ] && [ -n "$(ls -A migrations/*.sql 2>/dev/null)" ]; then
+                echo "Applying migrations..."
+                npx wrangler d1 migrations apply "$DB_NAME" --remote --env production || true
+              fi
+            fi
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Set Worker Secret
+        run: |
+          SECRET=$(echo -n "${{ secrets.ORG_SECRET_SEED }}-${{ github.repository_id }}-production" | sha256sum | cut -d' ' -f1 | base64 | head -c 64)
+          printf "%s" "$SECRET" | npx wrangler secret put SESSION_COOKIE_SECRET --env production
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy to Production
+        run: npx wrangler deploy --env production
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deployment Summary
+        run: |
+          echo "## Production Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **URL:** https://${{ env.SANITIZED_NAME }}.${{ env.DOMAIN_SUFFIX }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tag: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY

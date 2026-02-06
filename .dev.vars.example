@@ -1,0 +1,19 @@
+# Local development environment variables for Cloudflare Workers
+# Copy this file to .dev.vars and fill in your values
+# NEVER commit .dev.vars to version control!
+
+# Session cookie signing secret
+# Must be a random string of at least 32 characters
+# Generate with: openssl rand -base64 32
+SESSION_COOKIE_SECRET=your-random-secret-here-must-be-at-least-32-characters
+
+# Demo user credentials (for local development/testing)
+# Set these to enable demo login functionality
+DEMO_USER_EMAIL=demo@example.com
+DEMO_USER_PASSWORD=your-demo-password-here
+
+# Optional: Environment identifier (automatically set by wrangler based on --env flag)
+# ENVIRONMENT=preview
+
+# Optional: D1 database ID (if using Cloudflare D1 for notes storage)
+# D1_DATABASE_ID=your-d1-database-id

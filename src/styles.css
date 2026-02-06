@@ -1,0 +1,579 @@
+/**
+ * Tailwind CSS v4 Entry Point
+ *
+ * Tailwind CSS v4 uses a CSS-first configuration approach:
+ * - @import "tailwindcss" replaces @tailwind directives
+ * - @theme directive for theme customization
+ * - CSS custom properties for dynamic theming
+ *
+ * NOTE: Tailwind CSS v4 alpha does NOT support dark mode variants (dark:).
+ * Dark mode is implemented via CSS custom properties and data-theme attribute.
+ * See AppDocument.tsx for theme detection logic.
+ */
+
+/* Import Tailwind CSS v4 */
+@import "tailwindcss";
+
+/**
+ * Theme Configuration
+ *
+ * Define custom theme values using the @theme directive.
+ * These extend/override Tailwind's default theme.
+ */
+@theme {
+  /* Brand Colors */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-secondary: #8b5cf6;
+  --color-secondary-hover: #7c3aed;
+  --color-destructive: #ef4444;
+  --color-destructive-hover: #dc2626;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+
+  /* Spacing Scale */
+  --spacing-0: 0;
+  --spacing-px: 1px;
+  --spacing-0.5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1.5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-2.5: 0.625rem;
+  --spacing-3: 0.75rem;
+  --spacing-3.5: 0.875rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-7: 1.75rem;
+  --spacing-8: 2rem;
+  --spacing-9: 2.25rem;
+  --spacing-10: 2.5rem;
+  --spacing-11: 2.75rem;
+  --spacing-12: 3rem;
+  --spacing-14: 3.5rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  --spacing-28: 7rem;
+  --spacing-32: 8rem;
+  --spacing-36: 9rem;
+  --spacing-40: 10rem;
+
+  /* Border Radius */
+  --radius-none: 0;
+  --radius-sm: 0.125rem;
+  --radius-default: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-default: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* Transitions */
+  --transition-none: none;
+  --transition-all: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-default: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-colors: color, background-color, border-color, text-decoration-color, fill, stroke 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-opacity: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-shadow: box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-transform: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-Index Scale */
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-auto: auto;
+
+  /* Container Max Widths */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+}
+
+/**
+ * Light Theme (Default)
+ *
+ * CSS custom properties for the light color scheme.
+ * These are used by components via rgb(var(--property)).
+ */
+:root {
+  /* Base Colors */
+  --background: 255 255 255;
+  --foreground: 10 10 10;
+
+  /* Muted Colors */
+  --muted: 245 245 245;
+  --muted-foreground: 115 115 115;
+
+  /* Card/Surface Colors */
+  --card: 255 255 255;
+  --card-foreground: 10 10 10;
+
+  /* Popover Colors */
+  --popover: 255 255 255;
+  --popover-foreground: 10 10 10;
+
+  /* Border Colors */
+  --border: 229 229 229;
+  --input: 229 229 229;
+
+  /* Primary Colors */
+  --primary: 59 130 246;
+  --primary-foreground: 255 255 255;
+
+  /* Secondary Colors */
+  --secondary: 139 92 246;
+  --secondary-foreground: 255 255 255;
+
+  /* Accent Colors */
+  --accent: 245 245 245;
+  --accent-foreground: 10 10 10;
+
+  /* Destructive Colors */
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+
+  /* Ring Color for Focus States */
+  --ring: 59 130 246;
+}
+
+/**
+ * Dark Theme
+ *
+ * Applied when data-theme="dark" is set on the html element.
+ * Uses adjusted colors for better contrast and readability in dark mode.
+ */
+[data-theme='dark'] {
+  /* Base Colors */
+  --background: 10 10 10;
+  --foreground: 250 250 250;
+
+  /* Muted Colors */
+  --muted: 38 38 38;
+  --muted-foreground: 163 163 163;
+
+  /* Card/Surface Colors */
+  --card: 23 23 23;
+  --card-foreground: 250 250 250;
+
+  /* Popover Colors */
+  --popover: 23 23 23;
+  --popover-foreground: 250 250 250;
+
+  /* Border Colors */
+  --border: 38 38 38;
+  --input: 38 38 38;
+
+  /* Primary Colors - lighter for dark mode */
+  --primary: 96 165 250;
+  --primary-foreground: 10 10 10;
+
+  /* Secondary Colors - lighter for dark mode */
+  --secondary: 167 139 250;
+  --secondary-foreground: 10 10 10;
+
+  /* Accent Colors */
+  --accent: 38 38 38;
+  --accent-foreground: 250 250 250;
+
+  /* Destructive Colors - lighter for dark mode */
+  --destructive: 248 113 113;
+  --destructive-foreground: 10 10 10;
+
+  /* Ring Color for Focus States */
+  --ring: 96 165 250;
+}
+
+/**
+ * Base Layer Styles
+ *
+ * Global resets and base styles applied to all elements.
+ */
+@layer base {
+  * {
+    border-color: rgb(var(--border));
+  }
+
+  body {
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Focus visible styles */
+  :focus-visible {
+    outline: 2px solid rgb(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Selection styles */
+  ::selection {
+    background-color: rgb(var(--primary) / 0.2);
+    color: rgb(var(--foreground));
+  }
+}
+
+/**
+ * Component Layer - Utility Classes for Theming
+ *
+ * These classes use the CSS custom properties defined above.
+ */
+@layer components {
+  /* Background utilities using CSS variables */
+  .bg-background {
+    background-color: rgb(var(--background));
+  }
+
+  .bg-foreground {
+    background-color: rgb(var(--foreground));
+  }
+
+  .bg-muted {
+    background-color: rgb(var(--muted));
+  }
+
+  .bg-card {
+    background-color: rgb(var(--card));
+  }
+
+  .bg-popover {
+    background-color: rgb(var(--popover));
+  }
+
+  .bg-primary {
+    background-color: rgb(var(--primary));
+  }
+
+  .bg-secondary {
+    background-color: rgb(var(--secondary));
+  }
+
+  .bg-accent {
+    background-color: rgb(var(--accent));
+  }
+
+  .bg-destructive {
+    background-color: rgb(var(--destructive));
+  }
+
+  /* Text color utilities using CSS variables */
+  .text-foreground {
+    color: rgb(var(--foreground));
+  }
+
+  .text-background {
+    color: rgb(var(--background));
+  }
+
+  .text-muted-foreground {
+    color: rgb(var(--muted-foreground));
+  }
+
+  .text-card-foreground {
+    color: rgb(var(--card-foreground));
+  }
+
+  .text-popover-foreground {
+    color: rgb(var(--popover-foreground));
+  }
+
+  .text-primary {
+    color: rgb(var(--primary));
+  }
+
+  .text-primary-foreground {
+    color: rgb(var(--primary-foreground));
+  }
+
+  .text-secondary {
+    color: rgb(var(--secondary));
+  }
+
+  .text-secondary-foreground {
+    color: rgb(var(--secondary-foreground));
+  }
+
+  .text-accent-foreground {
+    color: rgb(var(--accent-foreground));
+  }
+
+  .text-destructive {
+    color: rgb(var(--destructive));
+  }
+
+  .text-destructive-foreground {
+    color: rgb(var(--destructive-foreground));
+  }
+
+  /* Border color utilities using CSS variables */
+  .border-border {
+    border-color: rgb(var(--border));
+  }
+
+  .border-input {
+    border-color: rgb(var(--input));
+  }
+
+  .border-primary {
+    border-color: rgb(var(--primary));
+  }
+
+  .border-secondary {
+    border-color: rgb(var(--secondary));
+  }
+
+  .border-destructive {
+    border-color: rgb(var(--destructive));
+  }
+
+  /* Ring (focus) utilities using CSS variables */
+  .ring-ring {
+    --tw-ring-color: rgb(var(--ring));
+  }
+
+  /* Common component patterns */
+  .card {
+    background-color: rgb(var(--card));
+    color: rgb(var(--card-foreground));
+    border-radius: var(--radius-lg);
+    border: 1px solid rgb(var(--border));
+    box-shadow: var(--shadow-sm);
+  }
+
+  .input-base {
+    background-color: transparent;
+    border: 1px solid rgb(var(--input));
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+    font-size: var(--font-size-sm);
+    transition: var(--transition-colors);
+  }
+
+  .input-base:focus {
+    outline: none;
+    border-color: rgb(var(--ring));
+    box-shadow: 0 0 0 2px rgb(var(--ring) / 0.2);
+  }
+
+  .input-base::placeholder {
+    color: rgb(var(--muted-foreground));
+  }
+
+  .input-base:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* Button base styles */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    transition: var(--transition-colors);
+    cursor: pointer;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid rgb(var(--ring));
+    outline-offset: 2px;
+  }
+
+  .btn:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+/**
+ * Utility Layer - Additional Custom Utilities
+ *
+ * These utilities supplement Tailwind's built-in utilities.
+ */
+@layer utilities {
+  /* Container utility */
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      max-width: 640px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .container {
+      max-width: 768px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      max-width: 1024px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .container {
+      max-width: 1280px;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .container {
+      max-width: 1536px;
+    }
+  }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+
+  .animate-slide-down {
+    animation: slide-down 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.2s ease-out;
+  }
+
+  /* Animations keyframes */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-down {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Hide scrollbar utility */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}

@@ -1,0 +1,82 @@
+# .caps-sync.yml - CAPS Template Ownership Configuration
+# This file defines which paths CAPS owns and how they sync to downstream repos.
+# Location: Template repo (tob-webapp-stack), synced to downstream automatically.
+
+version: 1
+
+# =============================================================================
+# TEMPLATE OWNED - Always overwritten from upstream
+# =============================================================================
+# These files are fully controlled by CAPS. Any local changes will be lost on sync.
+template_owned:
+  # Claude infrastructure (entire folder)
+  - .claude/**
+
+  # Development environment
+  - .devcontainer/Dockerfile
+  - .devcontainer/post-create.sh
+  - .devcontainer/post-start.sh
+
+  # Host setup script (for local devcontainer development)
+  - setup-host.sh
+
+  # CAPS CI/CD workflows (prefixed to avoid conflicts with app workflows)
+  - .github/workflows/caps-*.yml
+
+  # This config file itself
+  - .caps-sync.yml
+
+# =============================================================================
+# SHARED - Both template and app can modify
+# =============================================================================
+# These files use merge strategies to preserve both template and app content.
+shared:
+  # Template ensures its submodules exist, app can add more
+  - path: .gitmodules
+    strategy: additive
+
+  # Template owns the "## CAPS Base" section, app owns everything else
+  - path: CLAUDE.md
+    strategy: section
+    marker: "## CAPS Base"
+
+  # Deep merge JSON: template keys + app keys, app wins on conflict
+  - path: .devcontainer/devcontainer.json
+    strategy: deep_merge
+
+# =============================================================================
+# APP OWNED - Never touched by sync
+# =============================================================================
+# These files belong entirely to the downstream project.
+app_owned:
+  # Application code
+  - src/**
+  - app/**
+  - api/**
+  - lib/**
+  - workers/**
+
+  # Project documentation
+  - docs/**
+  - README.md
+
+  # Project configuration
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+  - pyproject.toml
+  - uv.lock
+
+  # Cloudflare configuration (app-specific: name, account_id, routes)
+  - wrangler.toml
+  - wrangler.*.toml
+
+  # Secrets and environment
+  - .env*
+
+  # App-specific workflows (everything except caps-*.yml)
+  - .github/workflows/*
+
+  # Legacy/archive directories
+  - caps_legacy/**
+  - claude_setup_legacy/**
