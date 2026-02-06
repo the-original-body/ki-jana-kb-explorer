@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI Jana KB - Topic Intelligence</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --bg-card: #1e1e2a;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --accent-blue: #4a90e2;
+            --accent-cyan: #00d4ff;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-orange: #f97316;
+            --border-color: #2a2a3a;
+            --shadow-glow: 0 0 40px rgba(74, 144, 226, 0.15);
+            --gradient-blue: linear-gradient(135deg, #4a90e2, #8b5cf6);
+            --gradient-warm: linear-gradient(135deg, #f97316, #ef4444);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f5f8;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #eaeaef;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a25;
+            --text-secondary: #505060;
+            --text-muted: #808090;
+            --border-color: #d0d0da;
+            --shadow-glow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-blue);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: var(--gradient-blue);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            grid-template-rows: auto 1fr auto;
+            height: calc(100vh - 73px);
+            gap: 0;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            grid-column: 1 / -1;
+            background: var(--bg-secondary);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .filter-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-input {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--text-primary);
+            width: 280px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .filter-select {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .roi-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .roi-slider {
+            width: 120px;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .roi-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+        }
+
+        .roi-value {
+            font-weight: 600;
+            color: var(--accent-cyan);
+            min-width: 40px;
+        }
+
+        .source-toggles {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .toggle-btn {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-container {
+            padding: 0.75rem 2rem;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item {
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .breadcrumb-item:hover {
+            color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .breadcrumb-item.active {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-muted);
+        }
+
+        /* Visualization Area */
+        .viz-container {
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-primary);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(74, 144, 226, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+        }
+
+        #bubble-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .bubble {
+            cursor: pointer;
+            transition: filter 0.3s;
+        }
+
+        .bubble:hover {
+            filter: brightness(1.2);
+        }
+
+        .bubble-label {
+            font-size: 11px;
+            fill: white;
+            text-anchor: middle;
+            pointer-events: none;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .bubble-size {
+            font-size: 10px;
+            fill: rgba(255,255,255,0.8);
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: var(--shadow-glow);
+            max-width: 300px;
+            z-index: 1000;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .tooltip-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .tooltip-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tooltip-stat-label {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+
+        .tooltip-stat-value {
+            font-weight: 600;
+            color: var(--accent-cyan);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        /* ROI Breakdown */
+        .roi-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .roi-item {
+            background: var(--bg-tertiary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .roi-item-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .roi-item-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .roi-total {
+            grid-column: 1 / -1;
+            background: var(--gradient-warm);
+            color: white;
+        }
+
+        /* Keywords */
+        .keywords-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .keyword-tag {
+            background: var(--bg-tertiary);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Questions List */
+        .questions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .question-item {
+            background: var(--bg-tertiary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .question-item:hover {
+            border-left-color: var(--accent-blue);
+            background: var(--bg-card);
+        }
+
+        /* Coverage */
+        .coverage-info {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .coverage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .coverage-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .coverage-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .coverage-value.high { color: var(--accent-green); }
+        .coverage-value.medium { color: var(--accent-yellow); }
+        .coverage-value.low { color: var(--accent-red); }
+
+        .coverage-bar {
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .coverage-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .coverage-topic {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .coverage-topic-label {
+            color: var(--text-muted);
+        }
+
+        .coverage-topic-name {
+            color: var(--accent-cyan);
+            font-weight: 500;
+        }
+
+        /* Export Button */
+        .export-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--gradient-blue);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        /* Bottom Stats Bar */
+        .bottom-bar {
+            grid-column: 1 / -1;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+        }
+
+        .quick-stats-section {
+            flex: 1;
+        }
+
+        .quick-stats-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .quick-stats-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .quick-stat-item {
+            background: var(--bg-tertiary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .quick-stat-item:hover {
+            border-color: var(--accent-blue);
+            background: var(--bg-card);
+        }
+
+        .quick-stat-rank {
+            background: var(--gradient-warm);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .quick-stat-name {
+            font-size: 0.85rem;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .quick-stat-score {
+            color: var(--accent-cyan);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Entity Pills */
+        .entity-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .entity-pill {
+            background: var(--bg-tertiary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .entity-pill:hover {
+            border-color: var(--accent-purple);
+        }
+
+        .entity-pill-count {
+            background: var(--accent-purple);
+            color: white;
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-hint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .zoom-btn:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 1rem;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Questions Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.visible .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+            padding: 0.5rem;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .modal-question {
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn-primary {
+            background: var(--gradient-blue);
+            border: none;
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .modal-btn-secondary {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-stats {
+                display: none;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .bottom-bar {
+                flex-direction: column;
+            }
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-glow);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1001;
+        }
+
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            color: var(--accent-green);
+            font-size: 1.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">KI</div>
+                <span class="logo-text">Topic Intelligence</span>
+            </div>
+        </div>
+
+        <div class="header-stats" id="headerStats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalQuestions">-</div>
+                <div class="stat-label">Fragen</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalClusters">-</div>
+                <div class="stat-label">Cluster</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalGaps">-</div>
+                <div class="stat-label">Gaps</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="coveragePercent">-</div>
+                <div class="stat-label">Coverage</div>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeToggle" title="Theme wechseln">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <span class="filter-label">Suche</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="Fragen durchsuchen...">
+            </div>
+
+            <div class="filter-group">
+                <span class="filter-label">Korperteil</span>
+                <select class="filter-select" id="entityFilter">
+                    <option value="">Alle</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <span class="filter-label">Min ROI Score</span>
+                <div class="roi-slider-container">
+                    <input type="range" class="roi-slider" id="roiSlider" min="0" max="100" value="0">
+                    <span class="roi-value" id="roiValue">0%</span>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <span class="filter-label">Quelle</span>
+                <div class="source-toggles">
+                    <button class="toggle-btn active" data-source="ki-jana">KI-Jana</button>
+                    <button class="toggle-btn active" data-source="tickets">Tickets</button>
+                </div>
+            </div>
+
+            <div class="filter-group" style="margin-left: auto;">
+                <button class="export-btn" id="exportAllBtn" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-container">
+            <nav class="breadcrumb" id="breadcrumb">
+                <span class="breadcrumb-item active">Alle Cluster</span>
+            </nav>
+        </div>
+
+        <!-- Visualization Container -->
+        <div class="viz-container" id="vizContainer">
+            <div class="loading" id="loadingState">
+                <div class="loading-spinner"></div>
+                <div>Lade Daten...</div>
+            </div>
+            <svg id="bubble-chart"></svg>
+            <div class="tooltip" id="tooltip"></div>
+            <div class="zoom-controls">
+                <button class="zoom-btn" id="zoomIn" title="Reinzoomen">+</button>
+                <button class="zoom-btn" id="zoomOut" title="Rauszoomen">-</button>
+                <button class="zoom-btn" id="zoomReset" title="Reset">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title" id="sidebarTitle">Cluster Details</div>
+                <div class="sidebar-subtitle" id="sidebarSubtitle">Klicke auf einen Cluster</div>
+            </div>
+            <div class="sidebar-content" id="sidebarContent">
+                <div class="empty-state">
+                    <div class="empty-state-icon">&#128200;</div>
+                    <div class="empty-state-text">Kein Cluster ausgewahlt</div>
+                    <div class="empty-state-hint">Klicke auf eine Bubble um Details zu sehen</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Bottom Stats Bar -->
+        <div class="bottom-bar">
+            <div class="quick-stats-section">
+                <div class="quick-stats-title">Top 5 ROI Themen</div>
+                <div class="quick-stats-list" id="topRoiList"></div>
+            </div>
+
+            <div class="quick-stats-section">
+                <div class="quick-stats-title">Top Korperteile</div>
+                <div class="entity-pills" id="topEntities"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions Modal -->
+    <div class="modal-overlay" id="questionsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Fragen</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-content" id="modalContent"></div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" id="modalCopyBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                    Kopieren fur NotebookLM
+                </button>
+                <button class="modal-btn modal-btn-primary" id="modalCloseBtn">Schliessen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">&#10003;</span>
+        <span class="toast-message" id="toastMessage">Kopiert!</span>
+    </div>
+
+    <script>
+        // ============================================
+        // DATA LOADING & STATE
+        // ============================================
+
+        let state = {
+            clusterHierarchy: null,
+            roiRankings: null,
+            entityStats: null,
+            coverageMatrix: null,
+            currentLevel: 'l1',
+            selectedCluster: null,
+            parentCluster: null,
+            filters: {
+                search: '',
+                entity: '',
+                minRoi: 0,
+                sources: ['ki-jana', 'tickets']
+            }
+        };
+
+        // Embedded data (will be populated from JSON files)
+        const DATA_BASE_PATH = './data/';
+
+        async function loadData() {
+            try {
+                const [hierarchy, roi, entities, coverage] = await Promise.all([
+                    fetch(DATA_BASE_PATH + 'cluster_hierarchy.json').then(r => r.json()),
+                    fetch(DATA_BASE_PATH + 'roi_ranked_topics.json').then(r => r.json()),
+                    fetch(DATA_BASE_PATH + 'entity_statistics.json').then(r => r.json()),
+                    fetch(DATA_BASE_PATH + 'coverage_matrix.json').then(r => r.json())
+                ]);
+
+                state.clusterHierarchy = hierarchy;
+                state.roiRankings = roi;
+                state.entityStats = entities;
+                state.coverageMatrix = coverage;
+
+                initializeUI();
+                renderVisualization();
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loadingState').innerHTML = `
+                    <div style="color: var(--accent-red); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">&#9888;</div>
+                        <div>Fehler beim Laden der Daten</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                            ${error.message}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // ============================================
+        // UI INITIALIZATION
+        // ============================================
+
+        function initializeUI() {
+            document.getElementById('loadingState').style.display = 'none';
+
+            // Update header stats
+            updateHeaderStats();
+
+            // Populate entity filter
+            populateEntityFilter();
+
+            // Render top ROI topics
+            renderTopRoiTopics();
+
+            // Render top entities
+            renderTopEntities();
+
+            // Setup event listeners
+            setupEventListeners();
+        }
+
+        function updateHeaderStats() {
+            const totalQuestions = state.clusterHierarchy?.metadata?.total_items || 0;
+            const l1Count = state.clusterHierarchy?.levels?.['1']?.count || 0;
+            const l2Count = state.clusterHierarchy?.levels?.['2']?.count || 0;
+
+            // Calculate gaps (clusters with low coverage)
+            let gaps = 0;
+            if (state.coverageMatrix?.customer_clusters) {
+                gaps = state.coverageMatrix.customer_clusters.filter(c => c.best_coverage < 0.6).length;
+            }
+
+            // Calculate average coverage
+            let avgCoverage = 0;
+            if (state.coverageMatrix?.customer_clusters) {
+                const coverages = state.coverageMatrix.customer_clusters.map(c => c.best_coverage);
+                avgCoverage = coverages.reduce((a, b) => a + b, 0) / coverages.length;
+            }
+
+            document.getElementById('totalQuestions').textContent = totalQuestions.toLocaleString('de-DE');
+            document.getElementById('totalClusters').textContent = `${l1Count} / ${l2Count}`;
+            document.getElementById('totalGaps').textContent = gaps;
+            document.getElementById('coveragePercent').textContent = (avgCoverage * 100).toFixed(0) + '%';
+        }
+
+        function populateEntityFilter() {
+            const select = document.getElementById('entityFilter');
+            const bodyParts = state.entityStats?.body_parts || {};
+
+            Object.entries(bodyParts)
+                .sort((a, b) => b[1] - a[1])
+                .forEach(([name, count]) => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = `${name} (${count})`;
+                    select.appendChild(option);
+                });
+        }
+
+        function renderTopRoiTopics() {
+            const container = document.getElementById('topRoiList');
+            const rankings = state.roiRankings?.rankings?.slice(0, 5) || [];
+
+            container.innerHTML = rankings.map((topic, i) => `
+                <div class="quick-stat-item" data-cluster-id="${topic.cluster_id}">
+                    <span class="quick-stat-rank">${i + 1}</span>
+                    <span class="quick-stat-name" title="${topic.name}">${truncate(topic.name, 30)}</span>
+                    <span class="quick-stat-score">${(topic.roi_score * 100).toFixed(0)}%</span>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            container.querySelectorAll('.quick-stat-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const clusterId = parseInt(item.dataset.clusterId);
+                    selectClusterById(clusterId);
+                });
+            });
+        }
+
+        function renderTopEntities() {
+            const container = document.getElementById('topEntities');
+            const bodyParts = state.entityStats?.body_parts || {};
+
+            const top5 = Object.entries(bodyParts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+
+            container.innerHTML = top5.map(([name, count]) => `
+                <div class="entity-pill" data-entity="${name}">
+                    <span>${name}</span>
+                    <span class="entity-pill-count">${count}</span>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            container.querySelectorAll('.entity-pill').forEach(pill => {
+                pill.addEventListener('click', () => {
+                    document.getElementById('entityFilter').value = pill.dataset.entity;
+                    state.filters.entity = pill.dataset.entity;
+                    renderVisualization();
+                });
+            });
+        }
+
+        // ============================================
+        // D3 VISUALIZATION
+        // ============================================
+
+        function renderVisualization() {
+            const container = document.getElementById('vizContainer');
+            const svg = d3.select('#bubble-chart');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            svg.attr('width', width).attr('height', height);
+            svg.selectAll('*').remove();
+
+            const g = svg.append('g');
+
+            // Prepare data based on current level
+            let data = prepareData();
+
+            if (data.length === 0) {
+                svg.append('text')
+                    .attr('x', width / 2)
+                    .attr('y', height / 2)
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', 'var(--text-muted)')
+                    .text('Keine Daten fur die aktuelle Auswahl');
+                return;
+            }
+
+            // Create bubble pack layout
+            const pack = d3.pack()
+                .size([width - 40, height - 40])
+                .padding(8);
+
+            const root = d3.hierarchy({ children: data })
+                .sum(d => Math.max(d.size || 1, 10));
+
+            const nodes = pack(root).leaves();
+
+            // Color scale based on ROI
+            const colorScale = d3.scaleSequential()
+                .domain([0, 0.7])
+                .interpolator(t => d3.interpolateRgb('#10b981', '#ef4444')(t));
+
+            // Create zoom behavior
+            const zoom = d3.zoom()
+                .scaleExtent([0.5, 4])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                });
+
+            svg.call(zoom);
+
+            // Zoom controls
+            document.getElementById('zoomIn').onclick = () => svg.transition().call(zoom.scaleBy, 1.3);
+            document.getElementById('zoomOut').onclick = () => svg.transition().call(zoom.scaleBy, 0.7);
+            document.getElementById('zoomReset').onclick = () => svg.transition().call(zoom.transform, d3.zoomIdentity);
+
+            // Create bubbles
+            const bubbles = g.selectAll('.bubble-group')
+                .data(nodes)
+                .join('g')
+                .attr('class', 'bubble-group')
+                .attr('transform', d => `translate(${d.x + 20}, ${d.y + 20})`);
+
+            // Bubble circles with gradient
+            bubbles.append('circle')
+                .attr('class', 'bubble')
+                .attr('r', 0)
+                .attr('fill', d => {
+                    const roi = d.data.roi_score || 0;
+                    return colorScale(roi);
+                })
+                .attr('stroke', 'rgba(255,255,255,0.2)')
+                .attr('stroke-width', 2)
+                .style('filter', 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))')
+                .on('click', (event, d) => handleBubbleClick(d))
+                .on('mouseenter', (event, d) => showTooltip(event, d))
+                .on('mousemove', (event, d) => moveTooltip(event))
+                .on('mouseleave', hideTooltip)
+                .transition()
+                .duration(800)
+                .ease(d3.easeBounce)
+                .attr('r', d => d.r);
+
+            // Labels for larger bubbles
+            bubbles.filter(d => d.r > 30)
+                .append('text')
+                .attr('class', 'bubble-label')
+                .attr('dy', '-0.3em')
+                .text(d => truncate(d.data.name, Math.floor(d.r / 4)))
+                .style('opacity', 0)
+                .transition()
+                .delay(400)
+                .duration(400)
+                .style('opacity', 1);
+
+            // Size labels
+            bubbles.filter(d => d.r > 25)
+                .append('text')
+                .attr('class', 'bubble-size')
+                .attr('dy', '1em')
+                .text(d => d.data.size?.toLocaleString('de-DE') || '')
+                .style('opacity', 0)
+                .transition()
+                .delay(500)
+                .duration(400)
+                .style('opacity', 1);
+        }
+
+        function prepareData() {
+            let data = [];
+
+            if (state.currentLevel === 'l1') {
+                // Show L1 clusters
+                if (state.coverageMatrix?.customer_clusters) {
+                    data = state.coverageMatrix.customer_clusters
+                        .filter(c => c.size > 0)
+                        .map(cluster => {
+                            // Find ROI info
+                            const roiInfo = state.roiRankings?.rankings?.find(r =>
+                                r.name?.toLowerCase().includes(cluster.name?.toLowerCase()?.substring(0, 20))
+                            );
+
+                            return {
+                                id: cluster.id,
+                                name: cluster.name,
+                                size: cluster.size,
+                                coverage: cluster.best_coverage,
+                                roi_score: roiInfo?.roi_score || (1 - cluster.best_coverage) * 0.5,
+                                breakdown: roiInfo?.breakdown || null,
+                                keywords: roiInfo?.keywords || '',
+                                sample_questions: roiInfo?.sample_questions || [],
+                                closest_topic: roiInfo?.closest_existing_topic || 'N/A',
+                                level: 'l1'
+                            };
+                        });
+                }
+            } else if (state.currentLevel === 'l2' && state.parentCluster) {
+                // Show L2 sub-clusters for selected L1
+                // For now, create synthetic sub-clusters based on ROI rankings
+                data = state.roiRankings?.rankings
+                    ?.filter(r => r.size > 10)
+                    .slice(0, 15)
+                    .map(topic => ({
+                        id: topic.cluster_id,
+                        name: topic.name,
+                        size: topic.size,
+                        coverage: 1 - topic.breakdown?.gap || 0.5,
+                        roi_score: topic.roi_score,
+                        breakdown: topic.breakdown,
+                        keywords: topic.keywords,
+                        sample_questions: topic.sample_questions,
+                        closest_topic: topic.closest_existing_topic,
+                        level: 'l2'
+                    })) || [];
+            } else if (state.currentLevel === 'questions') {
+                // Show individual questions
+                return [];
+            }
+
+            // Apply filters
+            if (state.filters.search) {
+                const search = state.filters.search.toLowerCase();
+                data = data.filter(d =>
+                    d.name?.toLowerCase().includes(search) ||
+                    d.keywords?.toLowerCase().includes(search)
+                );
+            }
+
+            if (state.filters.minRoi > 0) {
+                data = data.filter(d => (d.roi_score || 0) >= state.filters.minRoi / 100);
+            }
+
+            return data;
+        }
+
+        function handleBubbleClick(node) {
+            const d = node.data;
+
+            if (state.currentLevel === 'l1') {
+                // Drill down to L2
+                state.parentCluster = d;
+                state.currentLevel = 'l2';
+                updateBreadcrumb();
+                renderVisualization();
+            }
+
+            // Always show details in sidebar
+            state.selectedCluster = d;
+            updateSidebar(d);
+        }
+
+        // ============================================
+        // SIDEBAR UPDATES
+        // ============================================
+
+        function updateSidebar(cluster) {
+            const title = document.getElementById('sidebarTitle');
+            const subtitle = document.getElementById('sidebarSubtitle');
+            const content = document.getElementById('sidebarContent');
+
+            title.textContent = truncate(cluster.name, 40);
+            subtitle.textContent = `${cluster.size?.toLocaleString('de-DE') || 0} Fragen`;
+
+            const coverageClass = cluster.coverage >= 0.75 ? 'high' : cluster.coverage >= 0.6 ? 'medium' : 'low';
+            const coverageColor = coverageClass === 'high' ? '#10b981' : coverageClass === 'medium' ? '#f59e0b' : '#ef4444';
+
+            const keywords = cluster.keywords?.split(',').filter(k => k.trim() && k.trim() !== 'NaN').slice(0, 8) || [];
+            const questions = cluster.sample_questions?.filter(q => q && !q.includes('[TOO_LONG') && !q.includes('[AI_PII')).slice(0, 5) || [];
+
+            content.innerHTML = `
+                <!-- ROI Score -->
+                <div class="detail-section">
+                    <div class="detail-section-title">ROI Score</div>
+                    <div class="roi-breakdown">
+                        <div class="roi-item roi-total">
+                            <div class="roi-item-value">${((cluster.roi_score || 0) * 100).toFixed(0)}%</div>
+                            <div class="roi-item-label">Gesamt ROI</div>
+                        </div>
+                        ${cluster.breakdown ? `
+                            <div class="roi-item">
+                                <div class="roi-item-value" style="color: var(--accent-blue)">${((cluster.breakdown.frequency || 0) * 100).toFixed(0)}%</div>
+                                <div class="roi-item-label">Frequenz</div>
+                            </div>
+                            <div class="roi-item">
+                                <div class="roi-item-value" style="color: var(--accent-red)">${((cluster.breakdown.gap || 0) * 100).toFixed(0)}%</div>
+                                <div class="roi-item-label">Gap</div>
+                            </div>
+                            <div class="roi-item">
+                                <div class="roi-item-value" style="color: var(--accent-yellow)">${((cluster.breakdown.urgency || 0) * 100).toFixed(0)}%</div>
+                                <div class="roi-item-label">Dringlichkeit</div>
+                            </div>
+                            <div class="roi-item">
+                                <div class="roi-item-value" style="color: var(--accent-green)">${((cluster.breakdown.complexity || 0) * 100).toFixed(0)}%</div>
+                                <div class="roi-item-label">Einfachheit</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Keywords -->
+                ${keywords.length > 0 ? `
+                    <div class="detail-section">
+                        <div class="detail-section-title">Keywords</div>
+                        <div class="keywords-list">
+                            ${keywords.map(k => `<span class="keyword-tag">${k.trim()}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Sample Questions -->
+                ${questions.length > 0 ? `
+                    <div class="detail-section">
+                        <div class="detail-section-title">Beispiel-Fragen</div>
+                        <div class="questions-list">
+                            ${questions.map(q => `
+                                <div class="question-item" onclick="showAllQuestions()">${truncate(q, 100)}</div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Coverage -->
+                <div class="detail-section">
+                    <div class="detail-section-title">Content Coverage</div>
+                    <div class="coverage-info">
+                        <div class="coverage-header">
+                            <span class="coverage-label">Beste Ubereinstimmung</span>
+                            <span class="coverage-value ${coverageClass}">${((cluster.coverage || 0) * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="coverage-bar">
+                            <div class="coverage-bar-fill" style="width: ${(cluster.coverage || 0) * 100}%; background: ${coverageColor};"></div>
+                        </div>
+                        <div class="coverage-topic">
+                            <span class="coverage-topic-label">Nachster Justus-Artikel: </span>
+                            <span class="coverage-topic-name">${cluster.closest_topic || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Button -->
+                <div class="detail-section">
+                    <button class="export-btn" onclick="exportForNotebookLM()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                        Export fur NotebookLM
+                    </button>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // BREADCRUMB NAVIGATION
+        // ============================================
+
+        function updateBreadcrumb() {
+            const breadcrumb = document.getElementById('breadcrumb');
+            let items = [];
+
+            items.push({ label: 'Alle Cluster', level: 'l1', active: state.currentLevel === 'l1' });
+
+            if (state.parentCluster && (state.currentLevel === 'l2' || state.currentLevel === 'questions')) {
+                items.push({
+                    label: truncate(state.parentCluster.name, 25),
+                    level: 'l2',
+                    active: state.currentLevel === 'l2'
+                });
+            }
+
+            if (state.currentLevel === 'questions' && state.selectedCluster) {
+                items.push({
+                    label: 'Fragen',
+                    level: 'questions',
+                    active: true
+                });
+            }
+
+            breadcrumb.innerHTML = items.map((item, i) => `
+                ${i > 0 ? '<span class="breadcrumb-separator">&#10095;</span>' : ''}
+                <span class="breadcrumb-item ${item.active ? 'active' : ''}" data-level="${item.level}">${item.label}</span>
+            `).join('');
+
+            // Add click handlers
+            breadcrumb.querySelectorAll('.breadcrumb-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const level = item.dataset.level;
+                    if (level === 'l1') {
+                        state.currentLevel = 'l1';
+                        state.parentCluster = null;
+                        state.selectedCluster = null;
+                        resetSidebar();
+                    } else if (level === 'l2') {
+                        state.currentLevel = 'l2';
+                    }
+                    updateBreadcrumb();
+                    renderVisualization();
+                });
+            });
+        }
+
+        function resetSidebar() {
+            document.getElementById('sidebarTitle').textContent = 'Cluster Details';
+            document.getElementById('sidebarSubtitle').textContent = 'Klicke auf einen Cluster';
+            document.getElementById('sidebarContent').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">&#128200;</div>
+                    <div class="empty-state-text">Kein Cluster ausgewahlt</div>
+                    <div class="empty-state-hint">Klicke auf eine Bubble um Details zu sehen</div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // TOOLTIP
+        // ============================================
+
+        function showTooltip(event, node) {
+            const d = node.data;
+            const tooltip = document.getElementById('tooltip');
+
+            tooltip.innerHTML = `
+                <div class="tooltip-title">${truncate(d.name, 50)}</div>
+                <div class="tooltip-stats">
+                    <div class="tooltip-stat">
+                        <span class="tooltip-stat-label">Fragen</span>
+                        <span class="tooltip-stat-value">${d.size?.toLocaleString('de-DE') || 0}</span>
+                    </div>
+                    <div class="tooltip-stat">
+                        <span class="tooltip-stat-label">ROI Score</span>
+                        <span class="tooltip-stat-value">${((d.roi_score || 0) * 100).toFixed(0)}%</span>
+                    </div>
+                    <div class="tooltip-stat">
+                        <span class="tooltip-stat-label">Coverage</span>
+                        <span class="tooltip-stat-value">${((d.coverage || 0) * 100).toFixed(0)}%</span>
+                    </div>
+                    <div class="tooltip-stat">
+                        <span class="tooltip-stat-label">Gap</span>
+                        <span class="tooltip-stat-value">${((d.breakdown?.gap || 0) * 100).toFixed(0)}%</span>
+                    </div>
+                </div>
+            `;
+
+            tooltip.classList.add('visible');
+            moveTooltip(event);
+        }
+
+        function moveTooltip(event) {
+            const tooltip = document.getElementById('tooltip');
+            const container = document.getElementById('vizContainer');
+            const rect = container.getBoundingClientRect();
+
+            let x = event.clientX - rect.left + 15;
+            let y = event.clientY - rect.top + 15;
+
+            // Keep tooltip in bounds
+            if (x + 300 > rect.width) x = event.clientX - rect.left - 315;
+            if (y + 150 > rect.height) y = event.clientY - rect.top - 165;
+
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('visible');
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+
+        function setupEventListeners() {
+            // Search
+            document.getElementById('searchInput').addEventListener('input', debounce((e) => {
+                state.filters.search = e.target.value;
+                renderVisualization();
+            }, 300));
+
+            // Entity filter
+            document.getElementById('entityFilter').addEventListener('change', (e) => {
+                state.filters.entity = e.target.value;
+                renderVisualization();
+            });
+
+            // ROI slider
+            const roiSlider = document.getElementById('roiSlider');
+            const roiValue = document.getElementById('roiValue');
+            roiSlider.addEventListener('input', (e) => {
+                state.filters.minRoi = parseInt(e.target.value);
+                roiValue.textContent = state.filters.minRoi + '%';
+                renderVisualization();
+            });
+
+            // Source toggles
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    btn.classList.toggle('active');
+                    const source = btn.dataset.source;
+                    if (btn.classList.contains('active')) {
+                        if (!state.filters.sources.includes(source)) {
+                            state.filters.sources.push(source);
+                        }
+                    } else {
+                        state.filters.sources = state.filters.sources.filter(s => s !== source);
+                    }
+                    renderVisualization();
+                });
+            });
+
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                document.body.dataset.theme = document.body.dataset.theme === 'light' ? 'dark' : 'light';
+            });
+
+            // Export all
+            document.getElementById('exportAllBtn').addEventListener('click', exportAllAsCSV);
+
+            // Modal
+            document.getElementById('modalClose').addEventListener('click', hideModal);
+            document.getElementById('modalCloseBtn').addEventListener('click', hideModal);
+            document.getElementById('modalCopyBtn').addEventListener('click', copyQuestionsToClipboard);
+            document.getElementById('questionsModal').addEventListener('click', (e) => {
+                if (e.target.id === 'questionsModal') hideModal();
+            });
+
+            // Window resize
+            window.addEventListener('resize', debounce(() => renderVisualization(), 250));
+        }
+
+        // ============================================
+        // MODAL & EXPORT
+        // ============================================
+
+        function showAllQuestions() {
+            if (!state.selectedCluster) return;
+
+            const modal = document.getElementById('questionsModal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+
+            title.textContent = `Fragen: ${truncate(state.selectedCluster.name, 40)}`;
+
+            const questions = state.selectedCluster.sample_questions
+                ?.filter(q => q && !q.includes('[TOO_LONG') && !q.includes('[AI_PII')) || [];
+
+            content.innerHTML = questions.length > 0
+                ? questions.map(q => `<div class="modal-question">${q}</div>`).join('')
+                : '<p style="color: var(--text-muted);">Keine Fragen verfugbar</p>';
+
+            modal.classList.add('visible');
+        }
+
+        function hideModal() {
+            document.getElementById('questionsModal').classList.remove('visible');
+        }
+
+        function copyQuestionsToClipboard() {
+            if (!state.selectedCluster) return;
+
+            const questions = state.selectedCluster.sample_questions
+                ?.filter(q => q && !q.includes('[TOO_LONG') && !q.includes('[AI_PII'))
+                .join('\n\n---\n\n') || '';
+
+            const text = `# ${state.selectedCluster.name}\n\nAnzahl Fragen: ${state.selectedCluster.size}\nROI Score: ${((state.selectedCluster.roi_score || 0) * 100).toFixed(0)}%\n\n## Beispiel-Fragen:\n\n${questions}`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Fragen in Zwischenablage kopiert!');
+            });
+        }
+
+        function exportForNotebookLM() {
+            if (!state.selectedCluster) return;
+            copyQuestionsToClipboard();
+        }
+
+        function exportAllAsCSV() {
+            const data = state.coverageMatrix?.customer_clusters || [];
+            const rankings = state.roiRankings?.rankings || [];
+
+            let csv = 'Cluster ID,Name,Groesse,Coverage,ROI Score,Gap,Nachster Artikel\n';
+
+            data.forEach(cluster => {
+                const roi = rankings.find(r => r.name?.includes(cluster.name?.substring(0, 15)));
+                csv += `${cluster.id},"${cluster.name}",${cluster.size},${(cluster.best_coverage * 100).toFixed(1)}%,${((roi?.roi_score || 0) * 100).toFixed(1)}%,${((roi?.breakdown?.gap || 0) * 100).toFixed(1)}%,"${roi?.closest_existing_topic || 'N/A'}"\n`;
+            });
+
+            downloadFile(csv, 'topic_analysis.csv', 'text/csv');
+            showToast('CSV exportiert!');
+        }
+
+        function selectClusterById(id) {
+            const cluster = state.coverageMatrix?.customer_clusters?.find(c => c.id === id);
+            const roi = state.roiRankings?.rankings?.find(r => r.cluster_id === id);
+
+            if (cluster || roi) {
+                const combined = {
+                    id: id,
+                    name: roi?.name || cluster?.name || 'Unbekannt',
+                    size: roi?.size || cluster?.size || 0,
+                    coverage: cluster?.best_coverage || 0.5,
+                    roi_score: roi?.roi_score || 0,
+                    breakdown: roi?.breakdown,
+                    keywords: roi?.keywords || '',
+                    sample_questions: roi?.sample_questions || [],
+                    closest_topic: roi?.closest_existing_topic || 'N/A'
+                };
+
+                state.selectedCluster = combined;
+                updateSidebar(combined);
+            }
+        }
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+
+        function truncate(str, maxLength) {
+            if (!str) return '';
+            return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('visible');
+            setTimeout(() => toast.classList.remove('visible'), 3000);
+        }
+
+        // ============================================
+        // INITIALIZE
+        // ============================================
+
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

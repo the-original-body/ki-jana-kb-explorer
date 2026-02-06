@@ -1,63 +1,44 @@
 /**
- * Protected App Page (/app)
+ * KB Analytics Explorer Page (/app)
  *
- * This is the main protected application area that requires authentication.
+ * This is the main application page for exploring Ki-Jana Knowledge Base analytics.
  * Features:
- * - Display list of user's notes
- * - Form to create new notes
- * - Delete button per note
- * - User session info display
- * - Logout functionality
+ * - Links to interactive visualizations
+ * - Overview of available analytics data
+ * - Quick access to topic explorer, entity network, and coverage heatmap
  *
- * This route is protected by the auth interceptor - unauthenticated users
- * are redirected to /login.
- *
- * Uses "use client" directive for form interactivity and state management.
+ * Zero-Auth: Public access, no authentication required.
  */
 
 'use client';
 
 import * as React from 'react';
-import { Button } from '@/ui/button';
-import { Input } from '@/ui/input';
 
 /**
- * Note type definition
+ * Analytics resource type
  */
-interface Note {
+interface AnalyticsResource {
   id: string;
-  content: string;
-  createdAt: string;
-}
-
-/**
- * User session info (loaded from session)
- */
-interface UserSession {
-  email: string;
-  name?: string;
-}
-
-/**
- * Generates a random ID for notes
- */
-function generateNoteId(): string {
-  return `note_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  title: string;
+  description: string;
+  url: string;
+  type: 'visualization' | 'data';
+  icon: React.ReactNode;
 }
 
 /**
  * Header component for the app page
  */
-function Header({ user }: { user: UserSession | null }) {
+function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <a href="/" className="flex items-center space-x-2">
-          <span className="text-2xl" role="img" aria-label="Redwood tree">
-            🌲
+          <span className="text-2xl" role="img" aria-label="Knowledge Base">
+            KB
           </span>
-          <span className="font-bold text-xl">RedwoodSDK</span>
+          <span className="font-bold text-xl">Ki-Jana KB Explorer</span>
         </a>
 
         {/* Navigation */}
@@ -68,30 +49,20 @@ function Header({ user }: { user: UserSession | null }) {
           >
             Home
           </a>
+          <a href="/app" className="text-foreground font-semibold">
+            Analytics
+          </a>
           <a
             href="/ui"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             Components
           </a>
-          <a href="/app" className="text-foreground font-semibold">
-            Notes App
-          </a>
         </nav>
 
-        {/* User actions */}
+        {/* Actions */}
         <div className="flex items-center space-x-4">
-          {user && (
-            <span className="text-sm text-muted-foreground hidden sm:block">
-              {user.email}
-            </span>
-          )}
           <ThemeToggle />
-          <a href="/logout">
-            <Button variant="outline" size="sm">
-              Sign Out
-            </Button>
-          </a>
         </div>
       </div>
     </header>
@@ -159,7 +130,7 @@ function Footer() {
     <footer className="border-t border-border py-8">
       <div className="container flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">
-          &copy; {currentYear} RedwoodSDK. All rights reserved.
+          &copy; {currentYear} Ki-Jana Knowledge Base. All rights reserved.
         </p>
         <div className="flex items-center space-x-4">
           <a
@@ -169,18 +140,10 @@ function Footer() {
             Home
           </a>
           <a
-            href="/ui"
+            href="/app"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Components
-          </a>
-          <a
-            href="https://github.com/redwoodjs/sdk"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            GitHub
+            Analytics
           </a>
         </div>
       </div>
@@ -189,153 +152,29 @@ function Footer() {
 }
 
 /**
- * Create note form component
+ * Resource card component
  */
-function CreateNoteForm({ onCreateNote }: { onCreateNote: (content: string) => void }) {
-  const [content, setContent] = React.useState('');
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!content.trim()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Simulate async operation
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    onCreateNote(content.trim());
-    setContent('');
-    setIsSubmitting(false);
-  };
-
+function ResourceCard({ resource }: { resource: AnalyticsResource }) {
   return (
-    <form onSubmit={handleSubmit} className="flex gap-3">
-      <Input
-        type="text"
-        placeholder="Write a new note..."
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        className="flex-1"
-        disabled={isSubmitting}
-        autoComplete="off"
-      />
-      <Button type="submit" disabled={isSubmitting || !content.trim()}>
-        {isSubmitting ? (
-          <span className="flex items-center gap-2">
-            <svg
-              className="animate-spin h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-            Adding...
-          </span>
-        ) : (
-          <span className="flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 5v14m-7-7h14" />
-            </svg>
-            Add Note
-          </span>
-        )}
-      </Button>
-    </form>
-  );
-}
-
-/**
- * Single note card component
- */
-function NoteCard({
-  note,
-  onDelete,
-}: {
-  note: Note;
-  onDelete: (id: string) => void;
-}) {
-  const [isDeleting, setIsDeleting] = React.useState(false);
-
-  const handleDelete = async () => {
-    setIsDeleting(true);
-
-    // Simulate async operation
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    onDelete(note.id);
-  };
-
-  const formattedDate = new Date(note.createdAt).toLocaleString(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
-
-  return (
-    <div className="group relative rounded-lg border border-border bg-card p-4 shadow-sm transition-all hover:shadow-md hover:border-primary/50">
-      <div className="flex items-start justify-between gap-4">
+    <a
+      href={resource.url}
+      target={resource.url.endsWith('.html') ? '_blank' : undefined}
+      rel={resource.url.endsWith('.html') ? 'noopener noreferrer' : undefined}
+      className="group block rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary/50"
+    >
+      <div className="flex items-start gap-4">
+        <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+          {resource.icon}
+        </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-foreground whitespace-pre-wrap break-words">
-            {note.content}
+          <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+            {resource.title}
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            {resource.description}
           </p>
-          <p className="mt-2 text-xs text-muted-foreground">{formattedDate}</p>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className="shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-          aria-label={`Delete note: ${note.content.substring(0, 20)}...`}
-        >
-          {isDeleting ? (
-            <svg
-              className="animate-spin h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-          ) : (
+          <span className="inline-flex items-center mt-3 text-sm font-medium text-primary">
+            {resource.url.endsWith('.html') ? 'Open Visualization' : 'View Data'}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -346,125 +185,39 @@ function NoteCard({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              className="ml-1"
             >
-              <path d="M3 6h18" />
-              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-              <line x1="10" x2="10" y1="11" y2="17" />
-              <line x1="14" x2="14" y1="11" y2="17" />
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
             </svg>
-          )}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Notes list component
- */
-function NotesList({
-  notes,
-  onDeleteNote,
-}: {
-  notes: Note[];
-  onDeleteNote: (id: string) => void;
-}) {
-  if (notes.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-muted-foreground"
-          >
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="12" y1="18" x2="12" y2="12" />
-            <line x1="9" y1="15" x2="15" y2="15" />
-          </svg>
-        </div>
-        <h3 className="text-lg font-medium mb-2">No notes yet</h3>
-        <p className="text-sm text-muted-foreground">
-          Create your first note using the form above.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {notes.map((note) => (
-        <NoteCard key={note.id} note={note} onDelete={onDeleteNote} />
-      ))}
-    </div>
-  );
-}
-
-/**
- * User info card component
- */
-function UserInfoCard({ user }: { user: UserSession }) {
-  return (
-    <div className="rounded-lg border border-border bg-muted/50 p-4">
-      <h3 className="text-sm font-medium text-muted-foreground mb-2">
-        Signed in as
-      </h3>
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-          <span className="text-primary font-semibold">
-            {user.email.charAt(0).toUpperCase()}
           </span>
         </div>
-        <div>
-          <p className="font-medium">{user.name || 'User'}</p>
-          <p className="text-sm text-muted-foreground">{user.email}</p>
-        </div>
       </div>
-    </div>
+    </a>
   );
 }
 
 /**
- * Demo notice component
+ * Stats card component
  */
-function DemoNotice() {
+function StatsCard({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+}) {
   return (
-    <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-4">
-      <div className="flex items-start gap-3">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-amber-500 mt-0.5 shrink-0"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" x2="12" y1="8" y2="12" />
-          <line x1="12" x2="12.01" y1="16" y2="16" />
-        </svg>
+    <div className="rounded-lg border border-border bg-card p-4">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+          {icon}
+        </div>
         <div>
-          <h4 className="font-medium text-amber-700 dark:text-amber-300">
-            Demo Mode
-          </h4>
-          <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">
-            Notes are stored in browser memory only. They will be lost when you
-            refresh the page. Full persistence with Durable Objects or D1
-            coming soon.
-          </p>
+          <p className="text-2xl font-bold">{value}</p>
+          <p className="text-sm text-muted-foreground">{label}</p>
         </div>
       </div>
     </div>
@@ -472,120 +225,182 @@ function DemoNotice() {
 }
 
 /**
- * Initial demo notes
+ * Analytics resources
  */
-const INITIAL_NOTES: Note[] = [
+const ANALYTICS_RESOURCES: AnalyticsResource[] = [
   {
-    id: 'note_demo_1',
-    content: 'Welcome to the Notes app! This is a demo note to get you started.',
-    createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+    id: 'topic-explorer',
+    title: 'Topic Explorer',
+    description: 'Interactive exploration of extracted topics from the knowledge base with hierarchical navigation.',
+    url: '/topic_explorer.html',
+    type: 'visualization',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 16v-4" />
+        <path d="M12 8h.01" />
+      </svg>
+    ),
   },
   {
-    id: 'note_demo_2',
-    content:
-      'Try creating a new note using the form above. You can also delete notes by hovering and clicking the trash icon.',
-    createdAt: new Date(Date.now() - 1800000).toISOString(), // 30 mins ago
+    id: 'entity-network',
+    title: 'Entity Network',
+    description: 'Visualize relationships between entities extracted from the knowledge base content.',
+    url: '/entity_network.html',
+    type: 'visualization',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+        <circle cx="18" cy="5" r="3" />
+        <circle cx="6" cy="12" r="3" />
+        <circle cx="18" cy="19" r="3" />
+        <path d="M8.59 13.51 15.42 17.49" />
+        <path d="M15.41 6.51 8.59 10.49" />
+      </svg>
+    ),
+  },
+  {
+    id: 'coverage-heatmap',
+    title: 'Coverage Heatmap',
+    description: 'Analyze coverage patterns across different topics and categories in the knowledge base.',
+    url: '/coverage_heatmap.html',
+    type: 'visualization',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+        <rect width="18" height="18" x="3" y="3" rx="2" />
+        <path d="M3 9h18" />
+        <path d="M3 15h18" />
+        <path d="M9 3v18" />
+        <path d="M15 3v18" />
+      </svg>
+    ),
+  },
+  {
+    id: 'bertopic-viz',
+    title: 'BERTopic Visualization',
+    description: 'Advanced topic modeling visualization using BERTopic algorithm results.',
+    url: '/bertopic_visualization.html',
+    type: 'visualization',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+        <path d="M3 3v18h18" />
+        <path d="m19 9-5 5-4-4-3 3" />
+      </svg>
+    ),
   },
 ];
 
 /**
- * Main App page component
- *
- * This is a protected page that requires authentication.
- * The auth interceptor middleware handles redirecting unauthenticated users.
+ * Main KB Explorer page component
  */
 export default function AppPage() {
-  // In-memory notes state (will be replaced with server state when notes.ts is implemented)
-  const [notes, setNotes] = React.useState<Note[]>(INITIAL_NOTES);
-
-  // Mock user session (in production, this comes from session context)
-  // For now, we'll try to get it from a cookie or use a default
-  const [user, setUser] = React.useState<UserSession | null>(null);
-
-  // Load user info from session on mount
-  React.useEffect(() => {
-    // In production, the session would be loaded server-side
-    // For the demo, we'll use a simple approach
-    // The user is authenticated if they reached this page (auth interceptor)
-    setUser({
-      email: 'demo@example.com',
-      name: 'Demo User',
-    });
-  }, []);
-
-  const handleCreateNote = (content: string) => {
-    const newNote: Note = {
-      id: generateNoteId(),
-      content,
-      createdAt: new Date().toISOString(),
-    };
-
-    setNotes((prev) => [newNote, ...prev]);
-  };
-
-  const handleDeleteNote = (id: string) => {
-    setNotes((prev) => prev.filter((note) => note.id !== id));
-  };
-
   return (
     <div className="flex min-h-screen flex-col">
-      <Header user={user} />
+      <Header />
 
       <main className="flex-1 py-8">
         <div className="container">
           {/* Page header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight">My Notes</h1>
+            <h1 className="text-3xl font-bold tracking-tight">KB Analytics Explorer</h1>
             <p className="text-muted-foreground mt-2">
-              Create, view, and manage your personal notes.
+              Explore and analyze the Ki-Jana Knowledge Base with interactive visualizations and data insights.
             </p>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
-            {/* Main content */}
-            <div className="space-y-6">
-              {/* Create note form */}
-              <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
-                <h2 className="text-sm font-medium mb-3">New Note</h2>
-                <CreateNoteForm onCreateNote={handleCreateNote} />
-              </div>
+          {/* Stats overview */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+            <StatsCard
+              label="Total Topics"
+              value="~100+"
+              icon={
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
+                  <path d="M12 20V10" />
+                  <path d="M18 20V4" />
+                  <path d="M6 20v-4" />
+                </svg>
+              }
+            />
+            <StatsCard
+              label="Entities"
+              value="500+"
+              icon={
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              }
+            />
+            <StatsCard
+              label="Questions"
+              value="1000+"
+              icon={
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <path d="M12 17h.01" />
+                </svg>
+              }
+            />
+            <StatsCard
+              label="Visualizations"
+              value="4"
+              icon={
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
+                  <path d="M3 3v18h18" />
+                  <rect width="4" height="7" x="7" y="10" rx="1" />
+                  <rect width="4" height="12" x="15" y="5" rx="1" />
+                </svg>
+              }
+            />
+          </div>
 
-              {/* Notes list */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold">Your Notes</h2>
-                  <span className="text-sm text-muted-foreground">
-                    {notes.length} {notes.length === 1 ? 'note' : 'notes'}
-                  </span>
-                </div>
-                <NotesList notes={notes} onDeleteNote={handleDeleteNote} />
+          {/* Visualizations section */}
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Interactive Visualizations</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {ANALYTICS_RESOURCES.map((resource) => (
+                <ResourceCard key={resource.id} resource={resource} />
+              ))}
+            </div>
+          </section>
+
+          {/* Data files section */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">Data Files</h2>
+            <div className="rounded-lg border border-border bg-card p-4">
+              <p className="text-sm text-muted-foreground mb-4">
+                Raw JSON data files are available for programmatic access:
+              </p>
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  'bertopic_topics.json',
+                  'cluster_hierarchy.json',
+                  'coverage_matrix.json',
+                  'entity_cooccurrence.json',
+                  'entity_statistics.json',
+                  'hierarchy_statistics.json',
+                  'questions_with_entities.json',
+                  'roi_ranked_topics.json',
+                ].map((file) => (
+                  <a
+                    key={file}
+                    href={`/data/${file}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 p-2 rounded-md hover:bg-muted transition-colors text-sm"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    <span className="text-foreground">{file}</span>
+                  </a>
+                ))}
               </div>
             </div>
-
-            {/* Sidebar */}
-            <aside className="space-y-6">
-              {/* User info */}
-              {user && <UserInfoCard user={user} />}
-
-              {/* Demo notice */}
-              <DemoNotice />
-
-              {/* Quick stats */}
-              <div className="rounded-lg border border-border bg-card p-4">
-                <h3 className="text-sm font-medium mb-3">Quick Stats</h3>
-                <dl className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <dt className="text-muted-foreground">Total Notes</dt>
-                    <dd className="font-medium">{notes.length}</dd>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <dt className="text-muted-foreground">Storage</dt>
-                    <dd className="font-medium text-amber-500">In-Memory</dd>
-                  </div>
-                </dl>
-              </div>
-            </aside>
-          </div>
+          </section>
         </div>
       </main>
 

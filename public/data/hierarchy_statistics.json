@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-02-06T08:25:24.496943",
+  "total_items": 23187,
+  "l1_clusters": 14,
+  "l2_clusters": 77,
+  "l1_sizes": {
+    "count": 14.0,
+    "mean": 1656.2142857142858,
+    "std": 2601.6344323867297,
+    "min": 61.0,
+    "25%": 78.25,
+    "50%": 102.5,
+    "75%": 3439.75,
+    "max": 6977.0
+  },
+  "l2_sizes": {
+    "count": 77.0,
+    "mean": 301.12987012987014,
+    "std": 722.0767992149149,
+    "min": 1.0,
+    "25%": 4.0,
+    "50%": 12.0,
+    "75%": 72.0,
+    "max": 4710.0
+  },
+  "source_distribution": {
+    "ticket": 12569,
+    "ki_jana": 10618
+  },
+  "parameters": {
+    "umap_n_components": 50,
+    "umap_n_neighbors": 30,
+    "umap_min_dist": 0.1,
+    "umap_metric": "cosine",
+    "l1_target": [
+      8,
+      15
+    ],
+    "l2_target": [
+      4,
+      8
+    ]
+  }
+}
